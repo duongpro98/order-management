@@ -51,11 +51,11 @@ const ContactForm:React.FC = () => {
 
     const handleError = (value: string, field: string) => {
         if(!handleCheckInput(value, field)){
-            let newError = error;
+            let newError: any = error;
             newError[field] = "Invalid " + field
             setError({...newError});
         }else {
-            let newError = error;
+            let newError: any = error;
             newError[field] = "";
             setError({...newError});
         }
