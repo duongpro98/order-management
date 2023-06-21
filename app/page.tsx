@@ -29,7 +29,7 @@ export default async function Home() {
         <table className="table-auto bg-white">
           <thead>
           <tr>
-            <th className="py-2 px-4 border-b text-left">Stt</th>
+            <th className="py-2 px-4 border-b text-left">{datas[0].address}</th>
             <th className="py-2 px-4 border-b text-left">Tên khách hàng</th>
             <th className="py-2 px-4 border-b text-left">Tổng hóa đơn</th>
             <th className="py-2 px-4 border-b text-left">Tổng doanh thu</th>

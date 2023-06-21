@@ -23,7 +23,7 @@ export default function Create() {
         setAddress(value);
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         const querySnapshot = await getDocs(userCollection);
         const newData = querySnapshot.docs
