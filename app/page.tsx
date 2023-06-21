@@ -20,7 +20,7 @@ export default async function Home() {
   const viewStyle = " bg-blue-500 hover:bg-blue-400"
   const deleteStyle = " bg-red-500 hover:bg-red-400"
   const createStyle = " bg-green-500 hover:bg-green-400"
-  const datas = await getCustomers();
+  const datas: any = await getCustomers();
   console.log("data is here", datas)
 
   return (
