@@ -1,0 +1,10 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Quick Sans', sans-serif !important;
+}
+
+.container {
+  display: flex;
+  margin: 30px 90px;
+}

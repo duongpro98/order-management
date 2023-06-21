@@ -1,0 +1,35 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    background: rgb(42, 124, 111);
+    color: white;
+    padding: 20px;
+}
+
+.formColumnWrapper {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+}
+
+.formColumn{
+    display: flex;
+    flex-direction: column;
+}
+
+.btnSubmit{
+    width: 100%;
+    background: white;
+    border: none;
+    font-size: 16px;
+    padding: 15px 0px;
+    color: #2A7C6F;
+    cursor: pointer;
+}
+
+.btnSubmit:hover{
+    background: rgb(156, 212, 203);
+    color: white;
+    transition: 0.5s;
+}

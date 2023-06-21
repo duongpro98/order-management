@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "name": "Big C",
+    "phone": "12345678"
+  },
+  {
+    "id": "2",
+    "name": "Kang nam",
+    "phone": "12345678"
+  },
+  {
+    "id": "3",
+    "name": "San hô",
+    "phone": "12345678"
+  },
+  {
+    "id": "4",
+    "name": "Mặt trời vàng",
+    "phone": "12345678"
+  },
+  {
+    "id": "5",
+    "name": "Intercom",
+    "phone": "12345678"
+  },
+  {
+    "id": "6",
+    "name": "94LTLK",
+    "phone": "12345678"
+  }
+]

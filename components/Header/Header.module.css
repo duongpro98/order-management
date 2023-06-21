@@ -1,0 +1,31 @@
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100px;
+    padding: 30px 90px;
+    font-family: 'Quick Sans', sans-serif;
+}
+
+.title {
+    text-transform: uppercase;
+    text-align: left;
+    line-height: 1.41em;
+    font-size: 26px;
+}
+
+.itemContainer{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.item {
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    line-height: 30px;
+    margin: 0px 10px;
+}
