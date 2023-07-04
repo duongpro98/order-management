@@ -19,7 +19,7 @@ const Input: React.FC<InputProps> = ({ label, value, placeHolder , onChange, err
         <div className={`input-container ${isFocused ? 'focused' : ''} ${error ? 'error' : ''}`}>
             <label className="input-label">{label}</label>
             <input
-                className="input-field"
+                className="input-field mt-2"
                 type="text"
                 title="hello"
                 value={value}
