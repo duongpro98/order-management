@@ -16,7 +16,7 @@ const Input: React.FC<InputProps> = ({ label, value, placeHolder , onlyNumber , 
         onChange(e.target.value);
     };
 
-    const handleKeyPress = (event) => {
+    const handleKeyPress = (event: any) => {
         if(onlyNumber){
             console.log("???")
             const keyCode = event.keyCode || event.which;
