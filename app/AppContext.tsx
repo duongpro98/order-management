@@ -9,8 +9,12 @@ type MyContextValue = {
 };
 export const MyContext = createContext <MyContextValue | null>(null);
 
+type providerValue = {
+    children: any
+}
+
 // Create a provider component
-export const MyContextProvider:React.FC = ({ children }) => {
+export const MyContextProvider:React.FC<providerValue> = ({ children }) => {
     const [customers, setCustomers] = useState<any>([]);
 
     const updateCustomers = (newData: any) => {
