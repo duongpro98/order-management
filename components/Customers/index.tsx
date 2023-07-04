@@ -28,7 +28,7 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
             const newData = await getCustomers();
             setData(newData)
             console.log("delete success")
-        } catch (err) {
+        } catch (err: any) {
             console.log("err ", err)
         }
     }

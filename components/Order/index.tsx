@@ -82,7 +82,7 @@ const CreateOrder:React.FC<orderComponent> = ({ listCustomers, listProducts }) =
                 router.push('/order');
                 toast.success("Tạo hóa đơn thành công");
             }, 3000)
-        }catch (err){
+        }catch (err: any){
             console.log("error ", err)
         }
     }

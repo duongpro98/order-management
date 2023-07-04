@@ -43,7 +43,7 @@ export default function Create() {
                 router.push('/');
                 toast.success("Tạo khách hàng thành công");
             }, 3000)
-        }catch (err){
+        }catch (err: any){
             toast.error(err.message);
         }
     }
