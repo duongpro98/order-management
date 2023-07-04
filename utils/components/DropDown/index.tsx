@@ -67,7 +67,7 @@ const DropDown: React.FC<dropdownProps> = (
             </button>
             <div className={`option-wrapper mt-3 ${!open ? 'not-active' : ''}`}>
                 {
-                    data.map((item, idx) => (
+                    data.map((item: any, idx: number) => (
                         <div className={`option`} key={idx} onClick={() => {
                             handleSelect(item.name)
                             // if(isHavingOtherOption){
