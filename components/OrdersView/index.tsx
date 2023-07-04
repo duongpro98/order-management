@@ -52,7 +52,7 @@ const Orders:React.FC<orderComponent> = ({listOrders}) => {
                     </thead>
                     <tbody>
                     {
-                        data.map((item, idx) => (
+                        data.map((item: any, idx: number) => (
                             <tr key={idx}>
                                 <td className="py-2 px-4 border-b">{idx + 1}</td>
                                 <td className="py-2 px-4 border-b">{item.id}</td>
