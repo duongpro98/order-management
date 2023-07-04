@@ -9,7 +9,7 @@ interface datePickerObj {
 const MyDatePicker: React.FC<datePickerObj> = ({ handleChangeValue }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
 
-    const handleDateChange = (date) => {
+    const handleDateChange = (date: any) => {
         setSelectedDate(date);
         handleChangeValue(date);
     };
