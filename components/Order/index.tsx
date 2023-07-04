@@ -1,6 +1,5 @@
 'use client'
 import DropDown from "@/utils/components/DropDown";
-import Input from "@/utils/components/Input";
 import Loading from "@/utils/icon/Loading";
 import React, {useState} from "react";
 import ProductDetail from "@/components/Order/ProductDetail";
@@ -40,7 +39,7 @@ const Order:React.FC<orderComponent> = ({ listCustomers, listProducts }) => {
     const viewStyle = " bg-green-500 hover:bg-green-400"
 
     const handleChangeOrder = (type: string, index: number, value: string) => {
-        let newOrders = [...orders];
+        let newOrders = [...orders] as any;
         newOrders[index][type] = value;
         setOrders([...newOrders]);
     }
@@ -62,7 +61,7 @@ const Order:React.FC<orderComponent> = ({ listCustomers, listProducts }) => {
         setDate(format(date, 'dd/MM/yyyy'));
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
         await addOrders({
             customer,
