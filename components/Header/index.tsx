@@ -8,11 +8,13 @@ const Header: React.FC = () => {
             <div className={styles.title}>CHICKEN DREAM</div>
             <div className={styles.itemContainer}>
                 <Link href="/" className={styles.item}>
-                        Home
+                    Home
+                </Link>
+                <Link href="/order" className={styles.item}>
+                    Order
                 </Link>
                 <div className={styles.item}>Contact</div>
                 <div className={styles.item}>About us</div>
-                <div className={styles.item}>Shop</div>
             </div>
         </div>
     )

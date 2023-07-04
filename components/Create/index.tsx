@@ -5,6 +5,7 @@ import {collection, addDoc} from "@firebase/firestore";
 import Loading from "@/utils/icon/Loading";
 import {database} from "@/data/firebase";
 import {useRouter} from "next/navigation";
+import {toast} from "react-toastify";
 
 
 export default function Create() {
@@ -40,9 +41,10 @@ export default function Create() {
             setTimeout(() => {
                 setLoading(false);
                 router.push('/');
+                toast.success("Tạo khách hàng thành công");
             }, 3000)
         }catch (err){
-            console.log("err ", err)
+            toast.error(err.message);
         }
     }
 

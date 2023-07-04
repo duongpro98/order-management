@@ -18,12 +18,12 @@ const ProductDetail:React.FC<productDetailComponent> = ({ index, priority, listP
 
     const handleChangeAmount = (value: string) => {
         setAmount(value)
-        handleChangeOrder("amount", priority, value)
+        handleChangeOrder("amount", priority, parseFloat(value))
     };
 
     const handleChangePrice = (value: string) => {
         setPrice(value)
-        handleChangeOrder("price", priority, value)
+        handleChangeOrder("price", priority, parseFloat(value))
     };
 
     return (
@@ -34,10 +34,10 @@ const ProductDetail:React.FC<productDetailComponent> = ({ index, priority, listP
                     <DropDown data={listProducts} index={index} idx={priority} handleChangeOther={handleChangeOrder}/>
                 </div>
                 <div className="col-span-3">
-                    <Input label={"Amount"} value={amount} onChange={handleChangeAmount}/>
+                    <Input label={"Amount"} value={amount} onChange={handleChangeAmount} onlyNumber={true}/>
                 </div>
                 <div className="col-span-3">
-                    <Input label={"Price"} value={price} onChange={handleChangePrice}/>
+                    <Input label={"Price"} value={price} onChange={handleChangePrice} onlyNumber={true}/>
                 </div>
                 <div className="col-span-2">
                     <Button className="text-white font-bold py-2 px-4 rounded-md bg-red-500 hover:bg-red-400" onClick={deleteOrder}>Xóa</Button>

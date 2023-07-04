@@ -1,12 +1,12 @@
-import Order from "@/components/Order";
-import {getCustomers, getProducts} from "@/services";
+import {getOrders} from "@/services";
+import Orders from "@/components/OrdersView";
 
 export default async function PageOrder() {
-    const customers = await getCustomers();
-    const products = await getProducts();
+    const orders = await getOrders();
+
     return (
         <>
-            <Order listCustomers={customers} listProducts={products}/>
+            <Orders listOrders={orders}/>
         </>
     )
 }

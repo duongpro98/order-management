@@ -1,31 +1,30 @@
 'use client'
-import {database} from '@/data/firebase';
-import {deleteDoc, doc} from '@firebase/firestore';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useState} from "react";
 import Link from "next/link";
 import Button from "@/utils/components/Button";
-import {getCustomers} from "@/services";
-import {toast} from "react-toastify";
-import {MyContext} from "@/app/AppContext";
+import {deleteDoc, doc} from "@firebase/firestore";
+import {database} from "@/data/firebase";
+import {getOrders} from "@/services";
+import {calculateTotalPrice} from "@/utils/helper/orderHelper";
 
-interface customerComponent {
-    items: any
+interface orderComponent {
+    listOrders: any
 }
 
-const Customers:React.FC<customerComponent> = ({ items }) => {
-    const [data, setData] = useState<any[]>(items || []);
+const Orders:React.FC<orderComponent> = ({listOrders}) => {
+    const [data, setData] = useState(listOrders);
     const buttonStyle = "text-white font-bold py-2 px-4 rounded-2xl"
+    const createStyle = " bg-green-500 hover:bg-green-400"
     const viewStyle = " bg-blue-500 hover:bg-blue-400"
     const deleteStyle = " bg-red-500 hover:bg-red-400"
-    const createStyle = " bg-green-500 hover:bg-green-400"
 
     const handleDelete = async (id: string) => {
         try {
             // delete document
-            const customerDelete = doc(database, "customers", id);
-            await deleteDoc(customerDelete);
+            const orderDelete = doc(database, "orders", id);
+            await deleteDoc(orderDelete);
             // refresh the data
-            const newData = await getCustomers();
+            const newData = await getOrders();
             setData(newData)
             console.log("delete success")
         } catch (err) {
@@ -36,19 +35,16 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
     return (
         <div className="flex justify-center p-6">
             <div className="flex flex-col items-start p-6">
-                <Link href={"/create-order"}>
-                    <Button className={buttonStyle + createStyle}>Tạo đơn</Button>
-                </Link>
                 <table className="table-auto bg-white">
                     <thead>
                     <tr>
                         <th className="py-2 px-4 border-b text-left">Stt</th>
+                        <th className="py-2 px-4 border-b text-left">Mã hóa đơn</th>
                         <th className="py-2 px-4 border-b text-left">Tên khách hàng</th>
-                        <th className="py-2 px-4 border-b text-left">Tổng hóa đơn</th>
-                        <th className="py-2 px-4 border-b text-left">Tổng doanh thu</th>
-                        <th className="py-2 px-4 border-b text-left">Sđt</th>
+                        <th className="py-2 px-4 border-b text-left">Ngày hóa đơn</th>
+                        <th className="py-2 px-4 border-b text-left">Tổng tiền</th>
                         <th className="py-2 px-4 border-b text-left">
-                            <Link href={"/create"}>
+                            <Link href={"/create-order"}>
                                 <Button className={buttonStyle + createStyle}>Tạo</Button>
                             </Link>
                         </th>
@@ -59,10 +55,10 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
                         data.map((item, idx) => (
                             <tr key={idx}>
                                 <td className="py-2 px-4 border-b">{idx + 1}</td>
-                                <td className="py-2 px-4 border-b">{item.name}</td>
-                                <td className="py-2 px-4 border-b">0</td>
-                                <td className="py-2 px-4 border-b">0</td>
-                                <td className="py-2 px-4 border-b">{item.phone}</td>
+                                <td className="py-2 px-4 border-b">{item.id}</td>
+                                <td className="py-2 px-4 border-b">{item.customer}</td>
+                                <td className="py-2 px-4 border-b">{item.date.toString()}</td>
+                                <td className="py-2 px-4 border-b">{calculateTotalPrice(item.orders)}</td>
                                 <td className="py-2 px-4 border-b">
                                     <Button className={buttonStyle + viewStyle}>Xem</Button>
                                 </td>
@@ -84,4 +80,4 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
     )
 }
 
-export default Customers
+export default Orders;

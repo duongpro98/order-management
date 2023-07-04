@@ -20,6 +20,10 @@ a {
   }
 }
 
+.success-toast {
+  background-color: #ff0000; /* Replace with your desired background color */
+}
+
 .input-container {
   width: 100%;
   display: flex;

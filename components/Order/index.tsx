@@ -8,6 +8,10 @@ import MyDatePicker from "@/utils/components/DatePicker";
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
 import {addOrders} from "@/services";
+import {addDoc, collection} from "@firebase/firestore";
+import {database} from "@/data/firebase";
+import {toast} from "react-toastify";
+import {useRouter} from "next/navigation";
 
 interface orderComponent {
     listCustomers: any,
@@ -23,7 +27,8 @@ interface order {
 }
 
 
-const Order:React.FC<orderComponent> = ({ listCustomers, listProducts }) => {
+const CreateOrder:React.FC<orderComponent> = ({ listCustomers, listProducts }) => {
+    const router = useRouter();
     const emptyOrder = {
         id: uuidv4(),
         name: "",
@@ -63,12 +68,23 @@ const Order:React.FC<orderComponent> = ({ listCustomers, listProducts }) => {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        await addOrders({
-            customer,
-            date,
-            orders
-        })
-        console.log("create order successfully")
+        setLoading(true);
+        try{
+            const newOrder = {
+                customer,
+                date,
+                orders
+            }
+            const orderDB = collection(database, "orders");
+            await addDoc(orderDB, newOrder);
+            setTimeout(() => {
+                setLoading(false);
+                router.push('/order');
+                toast.success("Tạo hóa đơn thành công");
+            }, 3000)
+        }catch (err){
+            console.log("error ", err)
+        }
     }
 
     return (
@@ -119,4 +135,4 @@ const Order:React.FC<orderComponent> = ({ listCustomers, listProducts }) => {
     )
 }
 
-export default Order;
+export default CreateOrder;

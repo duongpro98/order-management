@@ -17,6 +17,14 @@ export async function getProducts() {
     return data;
 }
 
+export async function getOrders() {
+    const orders = collection(database, "orders");
+    const querySnapshot = await getDocs(orders);
+    const data = querySnapshot.docs
+        .map((doc) => ({...doc.data(), id: doc.id}));
+    return data;
+}
+
 export async function addOrders(data: any) {
     try{
         const orders = collection(database, "orders");
