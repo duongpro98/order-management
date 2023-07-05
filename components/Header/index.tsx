@@ -13,7 +13,9 @@ const Header: React.FC = () => {
                 <Link href="/order" className={styles.item}>
                     Order
                 </Link>
-                <div className={styles.item}>Contact</div>
+                <Link href="/inventory" className={styles.item}>
+                    Kho
+                </Link>
                 <div className={styles.item}>About us</div>
             </div>
         </div>
