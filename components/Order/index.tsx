@@ -46,9 +46,9 @@ const CreateOrder:React.FC<orderComponent> = ({}) => {
     useEffect(() => {
         const fetch = async () => {
             try{
-                const customersFetch = await getCustomers();
+                const customersFetch: any = await getCustomers();
                 setCustomers(customersFetch);
-                const productsFetch = await getProducts();
+                const productsFetch: any = await getProducts();
                 setProducts(productsFetch);
             }
             catch (e: any) {
