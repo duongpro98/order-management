@@ -1,21 +1,19 @@
 'use client'
 import DropDown from "@/utils/components/DropDown";
 import Loading from "@/utils/icon/Loading";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import ProductDetail from "@/components/Order/ProductDetail";
 import Button from "@/utils/components/Button";
 import MyDatePicker from "@/utils/components/DatePicker";
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
-import {addOrders} from "@/services";
+import {getCustomers, getProducts} from "@/services";
 import {addDoc, collection} from "@firebase/firestore";
 import {database} from "@/data/firebase";
 import {toast} from "react-toastify";
 import {useRouter} from "next/navigation";
 
 interface orderComponent {
-    listCustomers: any,
-    listProducts: any
 }
 
 interface order {
@@ -27,7 +25,7 @@ interface order {
 }
 
 
-const CreateOrder:React.FC<orderComponent> = ({ listCustomers, listProducts }) => {
+const CreateOrder:React.FC<orderComponent> = ({}) => {
     const router = useRouter();
     const emptyOrder = {
         id: uuidv4(),
@@ -36,12 +34,29 @@ const CreateOrder:React.FC<orderComponent> = ({ listCustomers, listProducts }) =
         price: 0,
         total: 0
     }
+    const [customers, setCustomers] = useState([])
+    const [products, setProducts] = useState([])
     const [customer, setCustomer] = useState("");
     const [date, setDate] = useState("");
     const [orders, setOrders] = useState<order[]>([]);
     const [loading, setLoading] = useState(false);
     const buttonStyle = "text-white font-bold py-2 px-4 rounded-md"
     const viewStyle = " bg-green-500 hover:bg-green-400"
+
+    useEffect(() => {
+        const fetch = async () => {
+            try{
+                const customersFetch = await getCustomers();
+                setCustomers(customersFetch);
+                const productsFetch = await getProducts();
+                setProducts(productsFetch);
+            }
+            catch (e: any) {
+                toast.error(e.message)
+            }
+        }
+        fetch();
+    }, [])
 
     const handleChangeOrder = (type: string, index: number, value: string) => {
         let newOrders = [...orders] as any;
@@ -93,7 +108,7 @@ const CreateOrder:React.FC<orderComponent> = ({ listCustomers, listProducts }) =
                 {/*Customer*/}
                 <div className="mb-4">
                     <div className={'font-bold mb-1'}>Customer: </div>
-                    <DropDown data={listCustomers} index={51} handleChange={handleChangeCustomer}/>
+                    <DropDown data={customers} index={51} handleChange={handleChangeCustomer}/>
                 </div>
                 {/*Orders*/}
                 <div className="mb-4">
@@ -107,7 +122,7 @@ const CreateOrder:React.FC<orderComponent> = ({ listCustomers, listProducts }) =
                     {
                         orders.map((order, idx) => (
                             <ProductDetail
-                                listProducts={listProducts}
+                                listProducts={products}
                                 key={order.id}
                                 index={48 - idx}
                                 priority={idx}
