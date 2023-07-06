@@ -3,16 +3,17 @@ import Input from "@/utils/components/Input";
 
 type PopupProps = {
     isOpen: boolean;
-    type: string;
+    type?: string;
     item?: any;
     onClose?: () => void;
     onDelete?: any;
     onUpdate?: any;
+    children?: any;
 };
 
-const Popup: React.FC<PopupProps> = ({ isOpen, item, type, onClose, onDelete, onUpdate }) => {
-    const [name, setName] = useState<string>(item.name || "");
-    const [amount, setAmount] = useState<string>(item.amount || "");
+const Popup: React.FC<PopupProps> = ({ isOpen, item, type, onClose, onDelete, onUpdate, children }) => {
+    const [name, setName] = useState<string>(item?.name || "");
+    const [amount, setAmount] = useState<string>(item?.amount || "");
 
     const handleNameChange = (value: string) => {
         setName(value);
@@ -41,32 +42,51 @@ const Popup: React.FC<PopupProps> = ({ isOpen, item, type, onClose, onDelete, on
         <div className={`fixed inset-0 flex items-center justify-center ${isOpen ? '' : 'hidden'}`}>
             <div className="fixed inset-0 bg-gray-900 opacity-75 z-10"></div>
             <div className="bg-white p-8 rounded shadow-lg z-50">
-                <h2 className="text-xl mb-4">{type !== 'update'? 'Xóa sản phẩm': 'Cập nhật'}</h2>
                 {
-                    type === 'update'? (
+                    children ? (
                         <>
-                            <div className="mb-4">
-                                <Input label={"Name"} value={name} onChange={handleNameChange}/>
-                            </div>
-                            <div className="mb-4">
-                                <Input label={"Amount"} onlyNumber={true} value={amount} onChange={handleAmountChange}/>
-                            </div>
-                            <button className="mt-4 mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={handleUpdateProduct}>
-                                Có
-                            </button>
-                            <button className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onClick={onClose}>
-                                Không
-                            </button>
+                            {children}
+                            {/*<button className="mt-4 mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={handleUpdateProduct}>*/}
+                            {/*    Có*/}
+                            {/*</button>*/}
+                            {/*<button className="mt-4 mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={onClose}>*/}
+                            {/*    Sửa*/}
+                            {/*</button>*/}
+                            {/*<button className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded" onClick={onClose}>*/}
+                            {/*    Chốt*/}
+                            {/*</button>*/}
                         </>
                     ): (
                         <>
-                            <p>Bạn có muốn xóa không?</p>
-                            <button className="mt-4 mr-5 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded" onClick={handleDeleteProduct}>
-                                Có
-                            </button>
-                            <button className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onClick={onClose}>
-                                Không
-                            </button>
+                            <h2 className="text-xl mb-4">{type !== 'update'? 'Xóa sản phẩm': 'Cập nhật'}</h2>
+                            {
+                                type === 'update'? (
+                                    <>
+                                        <div className="mb-4">
+                                            <Input label={"Name"} value={name} onChange={handleNameChange}/>
+                                        </div>
+                                        <div className="mb-4">
+                                            <Input label={"Amount"} onlyNumber={true} value={amount} onChange={handleAmountChange}/>
+                                        </div>
+                                        <button className="mt-4 mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={handleUpdateProduct}>
+                                            Có
+                                        </button>
+                                        <button className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onClick={onClose}>
+                                            Không
+                                        </button>
+                                    </>
+                                ): (
+                                    <>
+                                        <p>Bạn có muốn xóa không?</p>
+                                        <button className="mt-4 mr-5 bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded" onClick={handleDeleteProduct}>
+                                            Có
+                                        </button>
+                                        <button className="mt-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded" onClick={onClose}>
+                                            Không
+                                        </button>
+                                    </>
+                                )
+                            }
                         </>
                     )
                 }

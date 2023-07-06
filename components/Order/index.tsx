@@ -8,12 +8,15 @@ import MyDatePicker from "@/utils/components/DatePicker";
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
 import {getCustomers, getProducts} from "@/services";
-import {addDoc, collection} from "@firebase/firestore";
+import {addDoc, collection, doc, setDoc} from "@firebase/firestore";
 import {database} from "@/data/firebase";
 import {toast} from "react-toastify";
 import {useRouter} from "next/navigation";
 
 interface orderComponent {
+    item?: any,
+    handleClosePopup?: any,
+    refreshData?: any
 }
 
 interface order {
@@ -25,7 +28,7 @@ interface order {
 }
 
 
-const CreateOrder:React.FC<orderComponent> = ({}) => {
+const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshData }) => {
     const router = useRouter();
     const emptyOrder = {
         id: uuidv4(),
@@ -36,10 +39,10 @@ const CreateOrder:React.FC<orderComponent> = ({}) => {
     }
     const [customers, setCustomers] = useState([])
     const [products, setProducts] = useState([])
-    const [customer, setCustomer] = useState("");
-    const [date, setDate] = useState("");
-    const [orders, setOrders] = useState<order[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [customer, setCustomer] = useState(item?.customer || "");
+    const [date, setDate] = useState<string>(item?.date || "");
+    const [orders, setOrders] = useState<order[]>(item?.orders || []);
+    const [loading, setLoading] = useState("");
     const buttonStyle = "text-white font-bold py-2 px-4 rounded-md"
     const viewStyle = " bg-green-500 hover:bg-green-400"
 
@@ -81,26 +84,73 @@ const CreateOrder:React.FC<orderComponent> = ({}) => {
         setDate(format(date, 'dd/MM/yyyy'));
     }
 
+    const handleSuccessRequest = (message: string) => {
+        setTimeout(() => {
+            setLoading("");
+            if(handleClosePopup){
+                handleClosePopup();
+            }else {
+                router.push('/order');
+            }
+            toast.success(message);
+        }, 3000)
+    }
+
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        setLoading(true);
+        setLoading("create");
         try{
             const newOrder = {
                 customer,
                 date,
-                orders
+                orders,
+                status: 'Chờ'
             }
             const orderDB = collection(database, "orders");
             await addDoc(orderDB, newOrder);
-            setTimeout(() => {
-                setLoading(false);
-                router.push('/order');
-                toast.success("Tạo hóa đơn thành công");
-            }, 3000)
+            handleSuccessRequest("Tạo hóa đơn thành công");
         }catch (err: any){
             console.log("error ", err)
         }
     }
+
+    const handleUpdate = async (id: string) => {
+        setLoading("update");
+        try{
+            // update document
+            const updateOrder = {
+                customer,
+                date,
+                orders
+            }
+            const orderRef: any = doc(database, "orders", id);
+            await setDoc(orderRef, updateOrder);
+            // refresh the data
+            await refreshData();
+            handleSuccessRequest("Cập nhật hóa đơn thành công");
+        }catch (err: any){
+            toast.error(err.message);
+        }
+    };
+
+    // const handleCompleteOrder = async (id: string) => {
+    //     try{
+    //         // update document
+    //         const updateOrder = {
+    //             customer,
+    //             date,
+    //             orders,
+    //             status: "Xong"
+    //         }
+    //         const orderRef: any = doc(database, "orders", id);
+    //         await setDoc(orderRef, updateOrder);
+    //         // refresh the data
+    //         // await refreshData();
+    //     }catch (err: any) {
+    //         toast.error(err.message);
+    //     }
+    // }
+
 
     return (
         <>
@@ -108,12 +158,12 @@ const CreateOrder:React.FC<orderComponent> = ({}) => {
                 {/*Customer*/}
                 <div className="mb-4">
                     <div className={'font-bold mb-1'}>Customer: </div>
-                    <DropDown data={customers} index={51} handleChange={handleChangeCustomer}/>
+                    <DropDown data={customers} value={item?.customer} index={51} handleChange={handleChangeCustomer}/>
                 </div>
                 {/*Orders*/}
                 <div className="mb-4">
                     <div className={'font-bold mb-3'}>Date: </div>
-                    <MyDatePicker handleChangeValue={handleChangeDate}/>
+                    <MyDatePicker value={date} handleChangeValue={handleChangeDate}/>
                 </div>
                 <div className="mb-3 font-bold">
                     Order:
@@ -126,6 +176,7 @@ const CreateOrder:React.FC<orderComponent> = ({}) => {
                                 key={order.id}
                                 index={48 - idx}
                                 priority={idx}
+                                item={order}
                                 handleChangeOrder={handleChangeOrder}
                                 deleteOrder={() => deleteOrder(order.id)}
                             />
@@ -136,14 +187,37 @@ const CreateOrder:React.FC<orderComponent> = ({}) => {
                     </div>
                 </div>
                 {/*Footer*/}
-                <div className="flex items-center justify-between">
-                    <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                        type="submit"
-                    >
-                        {loading && <Loading/>}
-                        Submit
-                    </button>
+                <div className="flex items-center">
+                    {
+                        item ? (
+                            <>
+                                <button
+                                    className="mr-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                    type="button"
+                                    onClick={() => handleUpdate(item.id)}
+                                >
+                                    {(loading === "update") && <Loading/>}
+                                    Sửa
+                                </button>
+                                <button
+                                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                    type="button"
+                                    onClick={() => handleClosePopup()}
+                                >
+                                    {(loading === "complete") && <Loading/>}
+                                    Chốt
+                                </button>
+                            </>
+                        ): (
+                            <button
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                type="submit"
+                            >
+                                {(loading && "create") && <Loading/>}
+                                Submit
+                            </button>
+                        )
+                    }
                 </div>
             </form>
         </>

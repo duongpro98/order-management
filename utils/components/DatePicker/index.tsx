@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import {adjustDateForTimeZone, convertDate} from "@/utils/helper/orderHelper";
 
 interface datePickerObj {
+    value: string
     handleChangeValue?: any
 }
 
-const MyDatePicker: React.FC<datePickerObj> = ({ handleChangeValue }) => {
-    const [selectedDate, setSelectedDate] = useState(new Date());
+const MyDatePicker: React.FC<datePickerObj> = ({ value, handleChangeValue }) => {
+    const [selectedDate, setSelectedDate] = useState(value? adjustDateForTimeZone(new Date(convertDate(value))): new Date());
+
 
     const handleDateChange = (date: any) => {
         setSelectedDate(date);

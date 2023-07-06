@@ -6,15 +6,16 @@ import Button from "@/utils/components/Button";
 
 interface productDetailComponent {
     index: number
+    item?: any
     priority: number
     listProducts: any
     handleChangeOrder?: any
     deleteOrder?: any
 }
 
-const ProductDetail:React.FC<productDetailComponent> = ({ index, priority, listProducts, handleChangeOrder, deleteOrder }) => {
-    const [amount, setAmount] = useState("");
-    const [price, setPrice] = useState("");
+const ProductDetail:React.FC<productDetailComponent> = ({ item, index, priority, listProducts, handleChangeOrder, deleteOrder }) => {
+    const [amount, setAmount] = useState(item.amount || "");
+    const [price, setPrice] = useState(item.price || "");
 
     const handleChangeAmount = (value: string) => {
         setAmount(value)
@@ -31,7 +32,7 @@ const ProductDetail:React.FC<productDetailComponent> = ({ index, priority, listP
             <div className="grid grid-cols-12 gap-3 items-center">
                 <div className="col-span-4">
                     <div className={'font-bold'}>Product: </div>
-                    <DropDown data={listProducts} index={index} idx={priority} handleChangeOther={handleChangeOrder}/>
+                    <DropDown data={listProducts} value={item.name} index={index} idx={priority} handleChangeOther={handleChangeOrder}/>
                 </div>
                 <div className="col-span-3">
                     <Input label={"Amount"} value={amount} onChange={handleChangeAmount} onlyNumber={true}/>
