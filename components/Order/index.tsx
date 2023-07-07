@@ -8,10 +8,12 @@ import MyDatePicker from "@/utils/components/DatePicker";
 import { v4 as uuidv4 } from 'uuid';
 import { format } from 'date-fns';
 import {getCustomers, getProducts} from "@/services";
-import {addDoc, collection, doc, setDoc} from "@firebase/firestore";
+import {addDoc, collection, doc, getDocs, query, setDoc, UpdateData, where} from "@firebase/firestore";
 import {database} from "@/data/firebase";
 import {toast} from "react-toastify";
 import {useRouter} from "next/navigation";
+import {runTransaction} from "@firebase/firestore";
+import {convertArray} from "@/utils/helper/orderHelper";
 
 interface orderComponent {
     item?: any,
@@ -81,6 +83,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
     }
 
     const handleChangeDate = (date: any) => {
+        console.log("date picked ", date)
         setDate(format(date, 'dd/MM/yyyy'));
     }
 
@@ -133,23 +136,54 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
         }
     };
 
-    // const handleCompleteOrder = async (id: string) => {
-    //     try{
-    //         // update document
-    //         const updateOrder = {
-    //             customer,
-    //             date,
-    //             orders,
-    //             status: "Xong"
-    //         }
-    //         const orderRef: any = doc(database, "orders", id);
-    //         await setDoc(orderRef, updateOrder);
-    //         // refresh the data
-    //         // await refreshData();
-    //     }catch (err: any) {
-    //         toast.error(err.message);
-    //     }
-    // }
+    async function performTransaction(products: any, transactions: any) {
+        const transaction = runTransaction(database,async (transaction) => {
+            try {
+                for (const transactionObj of transactions) {
+                    const { name, total } = transactionObj;
+
+                    // Get the product document from Firestore with the same name
+                    const productRef = collection(database, "products");
+                    const queryProduct: any = query(productRef, where("name", "==", name));
+                    const productSnapshot = await getDocs(queryProduct);
+                    // Check if a matching product document exists
+                    if (!productSnapshot.empty) {
+                        const productDoc = productSnapshot.docs[0];
+                        const productData: any = productDoc.data();
+
+                        // Subtract the total from the product's total
+                        const updatedTotal = productData.amount - total;
+
+                        // Throw an error and cancel the transaction if the updated total is negative
+                        if (updatedTotal < 0) {
+                            throw new Error("Insufficient quantity for " + name);
+                        }
+
+                        // Update the product document with the updated total
+                        const productUpdate: any = doc(database, "products", productDoc.id);
+                        transaction.update(productUpdate, { amount: updatedTotal } as UpdateData<{ total: number }>);
+                    } else {
+                        throw new Error("Product not found: " + name);
+                    }
+                }
+            }catch (err: any) {
+                toast.error(err.message);
+            }
+        });
+
+        await transaction;
+    }
+
+    const handleCompleteOrder = async (id: string) => {
+        try{
+            const products = await getProducts();
+            const ordered = convertArray(item);
+            await performTransaction(products, ordered);
+            handleSuccessRequest("Chốt đơn thành công");
+        }catch (err: any) {
+            toast.error(err.message);
+        }
+    }
 
 
     return (
@@ -202,7 +236,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
                                 <button
                                     className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                     type="button"
-                                    onClick={() => handleClosePopup()}
+                                    onClick={() => handleCompleteOrder(item.id)}
                                 >
                                     {(loading === "complete") && <Loading/>}
                                     Chốt

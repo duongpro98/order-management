@@ -21,3 +21,26 @@ export const adjustDateForTimeZone = (date: Date) => {
     const adjustedDate = new Date(date.getTime() + localTimeZoneOffset * 60 * 1000); // Adjust the date with the time zone offset
     return adjustedDate;
 };
+
+export const convertArray = (orderData: any) => {
+// Create an object to store the aggregated totals by name
+    const aggregatedTotals = {} as any;
+
+// Loop through each order object
+    orderData.orders.forEach((order: any) => {
+        const { name, amount } = order;
+
+        // If the name already exists in aggregatedTotals, add the total to the existing value
+        if (aggregatedTotals.hasOwnProperty(name)) {
+            aggregatedTotals[name] += amount;
+        } else {
+            // Otherwise, initialize the total for that name
+            aggregatedTotals[name] = amount;
+        }
+    });
+
+// Create an array of objects with name and total properties
+    const aggregatedArray = Object.entries(aggregatedTotals).map(([name, total]) => ({ name, total }));
+
+    return aggregatedArray;
+}
