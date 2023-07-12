@@ -2,32 +2,50 @@
 import React, {useState} from "react";
 import Link from "next/link";
 import Button from "@/utils/components/Button";
-import {deleteDoc, doc, setDoc} from "@firebase/firestore";
+import {deleteDoc, doc} from "@firebase/firestore";
 import {database} from "@/data/firebase";
-import {getOrders} from "@/services";
-import {calculateTotalPrice} from "@/utils/helper/orderHelper";
+import {calculateTotalPrice, convertDateOrder} from "@/utils/helper/orderHelper";
 import Popup from "@/utils/components/Popup";
 import CreateOrder from "@/components/Order";
 import {toast} from "react-toastify";
+import usePagination from "@/utils/custome-hooks/usePagination";
+import {format} from "date-fns";
+import Pagination from "@/utils/components/Pagination";
 
 interface orderComponent {
     listOrders: any
 }
 
-const Orders:React.FC<orderComponent> = ({listOrders}) => {
+const Orders: React.FC<orderComponent> = ({listOrders}) => {
     const [data, setData] = useState(listOrders);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const {
+        currentPage,
+        totalPages,
+        handlePreviousPage,
+        handleNextPage
+    } = usePagination(setData as any, "orders", "date", 'desc', listOrders[listOrders.length - 1]);
     const buttonStyle = "text-white font-bold py-2 px-4 rounded-2xl"
     const createStyle = " bg-green-500 hover:bg-green-400"
     const viewStyle = " bg-blue-500 hover:bg-blue-400"
     const deleteStyle = " bg-red-500 hover:bg-red-400"
 
-    const refreshOrder = async () => {
-        try{
-            const newData = await getOrders();
-            setData(newData);
-        }catch (err: any){
+    const refreshOrder = async (item: any) => {
+        try {
+            let itemUpdate = data.map((it: any) => {
+                if(it.id === item.id){
+                    return  {
+                        ...it,
+                        ...item
+                    }
+                }
+                else {
+                    return it
+                }
+            });
+            setData(convertDateOrder(itemUpdate));
+        } catch (err: any) {
             toast.error(err.message)
         }
     }
@@ -38,7 +56,8 @@ const Orders:React.FC<orderComponent> = ({listOrders}) => {
             const orderDelete = doc(database, "orders", id);
             await deleteDoc(orderDelete);
             // refresh the data
-            await refreshOrder();
+            const newArray = data.filter((obj: any) => obj.id !== id);
+            setData(newArray)
             toast.success("delete success")
         } catch (err: any) {
             toast.error(err.message)
@@ -81,7 +100,7 @@ const Orders:React.FC<orderComponent> = ({listOrders}) => {
                                     <td className="py-2 px-4 border-b">{idx + 1}</td>
                                     <td className="py-2 px-4 border-b">{item.id}</td>
                                     <td className="py-2 px-4 border-b">{item.customer}</td>
-                                    <td className="py-2 px-4 border-b">{item.date.toString()}</td>
+                                    <td className="py-2 px-4 border-b">{format(item.date, 'dd/MM/yyyy')}</td>
                                     <td className="py-2 px-4 border-b">{calculateTotalPrice(item.orders)}</td>
                                     <td className="py-2 px-4 border-b">{item.status || 'Chờ'}</td>
                                     <td className="py-2 px-4 border-b">
@@ -105,16 +124,24 @@ const Orders:React.FC<orderComponent> = ({listOrders}) => {
                         }
                         </tbody>
                     </table>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        handlePreviousPage={handlePreviousPage}
+                        handleNextPage={handleNextPage}
+                    />
                 </div>
             </div>
             {
                 selectedItem && openEdit && <Popup
                     isOpen={true}
                     onClose={handleClosePopUp}
-                    // onDelete={handleDelete}
-                    // onUpdate={handleUpdate}
                 >
-                    <CreateOrder item={selectedItem} handleClosePopup={handleClosePopUp} refreshData={refreshOrder}/>
+                    <CreateOrder
+                        item={selectedItem}
+                        handleClosePopup={handleClosePopUp}
+                        refreshData={refreshOrder}
+                    />
                 </Popup>
             }
         </>

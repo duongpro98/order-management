@@ -11,7 +11,8 @@ interface dropdownProps {
     handleChange?: any;
     isHavingOtherOption?: boolean,
     handleSelectOption?: any;
-    handleChangeOther?: any
+    handleChangeOther?: any;
+    disabled?: boolean
 }
 
 const DropDown: React.FC<dropdownProps> = (
@@ -24,7 +25,8 @@ const DropDown: React.FC<dropdownProps> = (
         type,
         isHavingOtherOption = false,
         handleChange,
-        handleChangeOther
+        handleChangeOther,
+        disabled
     }) => {
     const [selected, setSelected] = useState(value || "Select");
     const [open, setOpen] = useState(false);
@@ -61,6 +63,7 @@ const DropDown: React.FC<dropdownProps> = (
                 onBlur={() => handleClose()}
                 className={`select ${active ? 'active' : ''}`}
                 type={'button'}
+                disabled={disabled}
             >
                 <p className={`text-value`}>{selected}</p>
                 <ArrowDown />

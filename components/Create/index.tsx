@@ -34,7 +34,8 @@ export default function Create() {
             const data = {
                 phone,
                 address,
-                name
+                name,
+                createdAt: new Date()
             };
             const customers: any = collection(database, "customers");
             await addDoc(customers, data);

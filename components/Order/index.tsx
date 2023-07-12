@@ -6,8 +6,7 @@ import ProductDetail from "@/components/Order/ProductDetail";
 import Button from "@/utils/components/Button";
 import MyDatePicker from "@/utils/components/DatePicker";
 import { v4 as uuidv4 } from 'uuid';
-import { format } from 'date-fns';
-import {getCustomers, getProducts} from "@/services";
+import {getData} from "@/services";
 import {addDoc, collection, doc, getDocs, query, setDoc, UpdateData, where} from "@firebase/firestore";
 import {database} from "@/data/firebase";
 import {toast} from "react-toastify";
@@ -42,7 +41,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
     const [customers, setCustomers] = useState([])
     const [products, setProducts] = useState([])
     const [customer, setCustomer] = useState(item?.customer || "");
-    const [date, setDate] = useState<string>(item?.date || "");
+    const [date, setDate] = useState<any>(item?.date || null);
     const [orders, setOrders] = useState<order[]>(item?.orders || []);
     const [loading, setLoading] = useState("");
     const buttonStyle = "text-white font-bold py-2 px-4 rounded-md"
@@ -51,13 +50,13 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
     useEffect(() => {
         const fetch = async () => {
             try{
-                const customersFetch: any = await getCustomers();
+                const customersFetch: any = await getData("customers");
                 setCustomers(customersFetch);
-                const productsFetch: any = await getProducts();
+                const productsFetch: any = await getData("products");
                 setProducts(productsFetch);
             }
             catch (e: any) {
-                toast.error(e.message)
+                toast.error(e.message);
             }
         }
         fetch();
@@ -83,14 +82,14 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
     }
 
     const handleChangeDate = (date: any) => {
-        console.log("date picked ", date)
-        setDate(format(date, 'dd/MM/yyyy'));
+        setDate(date);
     }
 
-    const handleSuccessRequest = (message: string) => {
+    const handleSuccessRequest = (message: string, item?: any) => {
         setTimeout(() => {
             setLoading("");
             if(handleClosePopup){
+                refreshData(item);
                 handleClosePopup();
             }else {
                 router.push('/order');
@@ -107,13 +106,14 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
                 customer,
                 date,
                 orders,
+                createdAt: new Date(),
                 status: 'Chờ'
             }
             const orderDB = collection(database, "orders");
             await addDoc(orderDB, newOrder);
             handleSuccessRequest("Tạo hóa đơn thành công");
         }catch (err: any){
-            console.log("error ", err)
+            toast.error(err.message);
         }
     }
 
@@ -129,19 +129,17 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
             const orderRef: any = doc(database, "orders", id);
             await setDoc(orderRef, updateOrder);
             // refresh the data
-            await refreshData();
-            handleSuccessRequest("Cập nhật hóa đơn thành công");
+            handleSuccessRequest("Cập nhật hóa đơn thành công", {id, ...updateOrder});
         }catch (err: any){
             toast.error(err.message);
         }
     };
 
-    async function performTransaction(products: any, transactions: any) {
+    const performTransaction = async (products: any, transactions: any) => {
         const transaction = runTransaction(database,async (transaction) => {
             try {
                 for (const transactionObj of transactions) {
                     const { name, total } = transactionObj;
-
                     // Get the product document from Firestore with the same name
                     const productRef = collection(database, "products");
                     const queryProduct: any = query(productRef, where("name", "==", name));
@@ -156,30 +154,41 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
 
                         // Throw an error and cancel the transaction if the updated total is negative
                         if (updatedTotal < 0) {
-                            throw new Error("Insufficient quantity for " + name);
+                            throw new Error("Số lượng trong kho không đủ cho sản phẩm " + name);
                         }
 
                         // Update the product document with the updated total
                         const productUpdate: any = doc(database, "products", productDoc.id);
-                        transaction.update(productUpdate, { amount: updatedTotal } as UpdateData<{ total: number }>);
+                        transaction.update(productUpdate, { amount: updatedTotal } as UpdateData<{ amount: number }>);
                     } else {
-                        throw new Error("Product not found: " + name);
+                        throw new Error("Không tìm thấy sản phẩm: " + name);
                     }
                 }
+                const updateOrder = {
+                    customer,
+                    date,
+                    orders
+                }
+                const orderUpdate: any = doc(database, 'orders', item.id);
+                transaction.update(orderUpdate, {
+                    status: 'Xong',
+                    ...updateOrder
+                } as UpdateData<{ status: string, customer: string, date: string, orders: any }>);
+                handleSuccessRequest("Chốt đơn thành công", {id: item.id, status: 'Xong', ...updateOrder});
             }catch (err: any) {
                 toast.error(err.message);
+                handleClosePopup();
             }
         });
-
         await transaction;
     }
 
-    const handleCompleteOrder = async (id: string) => {
+    const handleCompleteOrder = async () => {
+        setLoading("complete");
         try{
-            const products = await getProducts();
-            const ordered = convertArray(item);
+            const products = await getData("products");
+            const ordered = convertArray(orders);
             await performTransaction(products, ordered);
-            handleSuccessRequest("Chốt đơn thành công");
         }catch (err: any) {
             toast.error(err.message);
         }
@@ -192,12 +201,12 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
                 {/*Customer*/}
                 <div className="mb-4">
                     <div className={'font-bold mb-1'}>Customer: </div>
-                    <DropDown data={customers} value={item?.customer} index={51} handleChange={handleChangeCustomer}/>
+                    <DropDown data={customers} value={item?.customer} index={51} handleChange={handleChangeCustomer} disabled={item && item.status === 'Xong'}/>
                 </div>
                 {/*Orders*/}
                 <div className="mb-4">
                     <div className={'font-bold mb-3'}>Date: </div>
-                    <MyDatePicker value={date} handleChangeValue={handleChangeDate}/>
+                    <MyDatePicker value={date} handleChangeValue={handleChangeDate} disabled={item && item.status === 'Xong'}/>
                 </div>
                 <div className="mb-3 font-bold">
                     Order:
@@ -213,33 +222,51 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
                                 item={order}
                                 handleChangeOrder={handleChangeOrder}
                                 deleteOrder={() => deleteOrder(order.id)}
+                                isFinished={item && item.status === 'Xong'}
                             />
                         ))
                     }
-                    <div className="flex mt-4">
-                        <Button className={buttonStyle + viewStyle} onClick={() => handleButtonClick()}>Thêm</Button>
-                    </div>
+                    {
+                        (item && item?.status === 'Xong')? null: (
+                            <div className="flex mt-4">
+                                <Button className={buttonStyle + viewStyle} onClick={() => handleButtonClick()}>Thêm</Button>
+                            </div>
+                        )
+                    }
                 </div>
                 {/*Footer*/}
                 <div className="flex items-center">
                     {
                         item ? (
                             <>
+                                {
+                                    !(item?.status === 'Xong') && (
+                                        <>
+                                            <button
+                                                className="mr-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                                type="button"
+                                                onClick={() => handleUpdate(item.id)}
+                                            >
+                                                {(loading === "update") && <Loading/>}
+                                                Sửa
+                                            </button>
+                                            <button
+                                                className="mr-5 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                                type="button"
+                                                onClick={() => handleCompleteOrder()}
+                                            >
+                                                {(loading === "complete") && <Loading/>}
+                                                Chốt
+                                            </button>
+                                        </>
+                                    )
+                                }
                                 <button
-                                    className="mr-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                     type="button"
-                                    onClick={() => handleUpdate(item.id)}
+                                    onClick={() => handleClosePopup()}
                                 >
-                                    {(loading === "update") && <Loading/>}
-                                    Sửa
-                                </button>
-                                <button
-                                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                    type="button"
-                                    onClick={() => handleCompleteOrder(item.id)}
-                                >
-                                    {(loading === "complete") && <Loading/>}
-                                    Chốt
+                                    Đóng
                                 </button>
                             </>
                         ): (

@@ -4,9 +4,11 @@ import {deleteDoc, doc, setDoc} from '@firebase/firestore';
 import React, {useState} from 'react';
 import Link from "next/link";
 import Button from "@/utils/components/Button";
-import {getProducts} from "@/services";
+import {getData} from "@/services";
 import {toast} from "react-toastify";
 import Popup from "@/utils/components/Popup";
+import usePagination from "@/utils/custome-hooks/usePagination";
+import Pagination from "@/utils/components/Pagination";
 
 interface productComponent {
     items: any
@@ -16,13 +18,19 @@ const Products:React.FC<productComponent> = ({ items }) => {
     const [data, setData] = useState<any[]>(items || []);
     const [popupStatus, setPopupStatus] = useState("");
     const [selectedItem, setSelectedItem] = useState(null);
+    const {
+        currentPage,
+        totalPages,
+        handlePreviousPage,
+        handleNextPage
+    } = usePagination(setData as any, "products", "name", 'asc', items[items.length - 1]);
     const buttonStyle = "text-white font-bold py-2 px-4 rounded-2xl"
     const viewStyle = " bg-blue-500 hover:bg-blue-400"
     const deleteStyle = " bg-red-500 hover:bg-red-400"
     const createStyle = " bg-green-500 hover:bg-green-400"
 
     const refreshData = async () => {
-        const newData = await getProducts();
+        const newData = await getData("products");
         setData(newData);
     }
 
@@ -108,6 +116,12 @@ const Products:React.FC<productComponent> = ({ items }) => {
                         }
                         </tbody>
                     </table>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        handlePreviousPage={handlePreviousPage}
+                        handleNextPage={handleNextPage}
+                    />
                 </div>
             </div>
 

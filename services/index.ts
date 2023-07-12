@@ -1,35 +1,34 @@
-import {addDoc, collection, getDocs} from "@firebase/firestore";
+import {collection, getDocs, limit, orderBy, query} from "@firebase/firestore";
 import {database} from "../data/firebase";
 
-export async function getCustomers() {
-    const customers = collection(database, "customers");
-    const querySnapshot = await getDocs(customers);
+export async function getData(collectionName: string){
+    const dataRef = collection(database, collectionName);
+    const querySnapshot = await getDocs(dataRef);
     const data = querySnapshot.docs
         .map((doc) => ({...doc.data(), id: doc.id}));
     return data;
 }
 
-export async function getProducts() {
-    const products = collection(database, "products");
-    const querySnapshot = await getDocs(products);
-    const data = querySnapshot.docs
+export async function getCustomersFirstPage() {
+    const first = query(collection(database, "customers"), orderBy("name"), limit(3));
+    const documentSnapshots = await getDocs(first);
+    const data = documentSnapshots.docs
         .map((doc) => ({...doc.data(), id: doc.id}));
     return data;
 }
 
-export async function getOrders() {
-    const orders = collection(database, "orders");
-    const querySnapshot = await getDocs(orders);
-    const data = querySnapshot.docs
+export async function getProductFirstPage() {
+    const first = query(collection(database, "products"), orderBy("name"), limit(3));
+    const documentSnapshots = await getDocs(first);
+    const data = documentSnapshots.docs
         .map((doc) => ({...doc.data(), id: doc.id}));
     return data;
 }
 
-export async function addOrders(data: any) {
-    try{
-        const orders = collection(database, "orders");
-        await addDoc(orders, data);
-    }catch (err){
-        console.log("error ", err)
-    }
+export async function getOrdersFirstPage() {
+    const first = query(collection(database, "orders"), orderBy("date", "desc"), limit(3));
+    const documentSnapshots = await getDocs(first);
+    const data = documentSnapshots.docs
+        .map((doc) => ({...doc.data(), id: doc.id}));
+    return data;
 }

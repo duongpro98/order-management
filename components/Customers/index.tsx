@@ -1,12 +1,15 @@
 'use client'
 import {database} from '@/data/firebase';
-import {deleteDoc, doc} from '@firebase/firestore';
-import React, {useContext, useEffect, useState} from 'react';
+import {
+    deleteDoc,
+    doc,
+} from '@firebase/firestore';
+import React, {useState} from 'react';
 import Link from "next/link";
 import Button from "@/utils/components/Button";
-import {getCustomers} from "@/services";
 import {toast} from "react-toastify";
-import {MyContext} from "@/app/AppContext";
+import Pagination from "@/utils/components/Pagination";
+import usePagination from "@/utils/custome-hooks/usePagination";
 
 interface customerComponent {
     items: any
@@ -14,6 +17,12 @@ interface customerComponent {
 
 const Customers:React.FC<customerComponent> = ({ items }) => {
     const [data, setData] = useState<any[]>(items || []);
+    const {
+        currentPage,
+        totalPages,
+        handlePreviousPage,
+        handleNextPage
+    } = usePagination(setData as any, "customers", "name", 'asc', items[items.length - 1]);
     const buttonStyle = "text-white font-bold py-2 px-4 rounded-2xl"
     const viewStyle = " bg-blue-500 hover:bg-blue-400"
     const deleteStyle = " bg-red-500 hover:bg-red-400"
@@ -25,11 +34,11 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
             const customerDelete = doc(database, "customers", id);
             await deleteDoc(customerDelete);
             // refresh the data
-            const newData = await getCustomers();
-            setData(newData)
-            console.log("delete success")
+            const newArray = data.filter(obj => obj.id !== id);
+            setData(newArray)
+            toast.success("Xóa thành công");
         } catch (err: any) {
-            console.log("err ", err)
+            toast.error(err.message);
         }
     }
 
@@ -79,6 +88,12 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
                     }
                     </tbody>
                 </table>
+                <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    handlePreviousPage={handlePreviousPage}
+                    handleNextPage={handleNextPage}
+                />
             </div>
         </div>
     )

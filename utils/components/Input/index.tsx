@@ -6,10 +6,11 @@ interface InputProps {
     placeHolder?: string;
     onChange: (value: string) => void;
     error?: string;
-    onlyNumber?: boolean
+    onlyNumber?: boolean;
+    disabled?: boolean
 }
 
-const Input: React.FC<InputProps> = ({ label, value, placeHolder , onlyNumber , onChange, error }) => {
+const Input: React.FC<InputProps> = ({ label, value, placeHolder , onlyNumber , onChange, error, disabled }) => {
     const [isFocused, setIsFocused] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +19,6 @@ const Input: React.FC<InputProps> = ({ label, value, placeHolder , onlyNumber , 
 
     const handleKeyPress = (event: any) => {
         if(onlyNumber){
-            console.log("???")
             const keyCode = event.keyCode || event.which;
             const keyValue = String.fromCharCode(keyCode);
             const regex = /[0-9]/; // Regular expression to allow only numeric characters
@@ -40,6 +40,7 @@ const Input: React.FC<InputProps> = ({ label, value, placeHolder , onlyNumber , 
                 placeholder={placeHolder}
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
+                disabled={disabled}
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
             />

@@ -11,9 +11,10 @@ interface productDetailComponent {
     listProducts: any
     handleChangeOrder?: any
     deleteOrder?: any
+    isFinished: boolean
 }
 
-const ProductDetail:React.FC<productDetailComponent> = ({ item, index, priority, listProducts, handleChangeOrder, deleteOrder }) => {
+const ProductDetail:React.FC<productDetailComponent> = ({ item, index, priority, listProducts, handleChangeOrder, deleteOrder, isFinished }) => {
     const [amount, setAmount] = useState(item.amount || "");
     const [price, setPrice] = useState(item.price || "");
 
@@ -32,17 +33,21 @@ const ProductDetail:React.FC<productDetailComponent> = ({ item, index, priority,
             <div className="grid grid-cols-12 gap-3 items-center">
                 <div className="col-span-4">
                     <div className={'font-bold'}>Product: </div>
-                    <DropDown data={listProducts} value={item.name} index={index} idx={priority} handleChangeOther={handleChangeOrder}/>
+                    <DropDown data={listProducts} value={item.name} index={index} idx={priority} handleChangeOther={handleChangeOrder} disabled={isFinished}/>
                 </div>
                 <div className="col-span-3">
-                    <Input label={"Amount"} value={amount} onChange={handleChangeAmount} onlyNumber={true}/>
+                    <Input label={"Amount"} value={amount} onChange={handleChangeAmount} onlyNumber={true} disabled={isFinished}/>
                 </div>
                 <div className="col-span-3">
-                    <Input label={"Price"} value={price} onChange={handleChangePrice} onlyNumber={true}/>
+                    <Input label={"Price"} value={price} onChange={handleChangePrice} onlyNumber={true} disabled={isFinished}/>
                 </div>
-                <div className="col-span-2">
-                    <Button className="text-white font-bold py-2 px-4 rounded-md bg-red-500 hover:bg-red-400" onClick={deleteOrder}>Xóa</Button>
-                </div>
+                {
+                    !isFinished && (
+                        <div className="col-span-2">
+                            <Button className="text-white font-bold py-2 px-4 rounded-md bg-red-500 hover:bg-red-400" onClick={deleteOrder}>Xóa</Button>
+                        </div>
+                    )
+                }
             </div>
         </div>
     )

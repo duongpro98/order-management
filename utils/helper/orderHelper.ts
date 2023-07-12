@@ -16,6 +16,17 @@ export const convertDate = (value: string) => {
     return formattedDateString;
 }
 
+export const convertDateOrder = (arr: any) => {
+    return arr.map((obj: any) => {
+        const convertedObj = { ...obj };
+        if (obj.date && obj.date.seconds) {
+            const date = new Date(obj.date.seconds * 1000);
+            convertedObj.date = date;
+        }
+        return convertedObj;
+    });
+}
+
 export const adjustDateForTimeZone = (date: Date) => {
     const localTimeZoneOffset = new Date().getTimezoneOffset() * -1; // Get the local time zone offset in minutes and convert to milliseconds
     const adjustedDate = new Date(date.getTime() + localTimeZoneOffset * 60 * 1000); // Adjust the date with the time zone offset
@@ -27,7 +38,7 @@ export const convertArray = (orderData: any) => {
     const aggregatedTotals = {} as any;
 
 // Loop through each order object
-    orderData.orders.forEach((order: any) => {
+    orderData.forEach((order: any) => {
         const { name, amount } = order;
 
         // If the name already exists in aggregatedTotals, add the total to the existing value

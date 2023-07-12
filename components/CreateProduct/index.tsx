@@ -29,7 +29,8 @@ export default function CreateProduct() {
         try{
             const data = {
                 name,
-                amount
+                amount,
+                createdAt: new Date()
             };
             const products: any = collection(database, "products");
             await addDoc(products, data);

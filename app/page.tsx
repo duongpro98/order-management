@@ -1,12 +1,10 @@
 import Customers from "@/components/Customers";
-import {getCustomers} from "@/services";
-import {useContext} from "react";
-import {MyContext} from "@/app/AppContext";
+import {getCustomersFirstPage} from "@/services";
 
 export const revalidate = 1
 
 export default async function Home() {
-  const data = await getCustomers();
+  const data = await getCustomersFirstPage();
   return (
     <>
       <Customers items={data}/>
