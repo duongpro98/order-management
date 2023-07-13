@@ -12,7 +12,7 @@ import {database} from "@/data/firebase";
 import {toast} from "react-toastify";
 import {useRouter} from "next/navigation";
 import {runTransaction} from "@firebase/firestore";
-import {convertArray} from "@/utils/helper/orderHelper";
+import {calculateTotalPrice, convertArray} from "@/utils/helper/orderHelper";
 
 interface orderComponent {
     item?: any,
@@ -111,6 +111,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
                 date,
                 orders,
                 createdAt: new Date(),
+                total: calculateTotalPrice(orders),
                 status: 'Chờ'
             }
             const orderDB = collection(database, "orders");
@@ -128,7 +129,8 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
             const updateOrder = {
                 customer,
                 date,
-                orders
+                orders,
+                total: calculateTotalPrice(orders)
             }
             const orderRef: any = doc(database, "orders", id);
             await setDoc(orderRef, updateOrder);
@@ -171,7 +173,8 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
                 const updateOrder = {
                     customer,
                     date,
-                    orders
+                    orders,
+                    total: calculateTotalPrice(orders)
                 }
                 const orderUpdate: any = doc(database, 'orders', item.id);
                 transaction.update(orderUpdate, {

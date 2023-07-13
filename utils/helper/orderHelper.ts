@@ -35,14 +35,18 @@ export const convertDateOrder = (arr: any) => {
     });
 }
 
+
 export const processCustomer = async (arr: any) => {
     const data = await Promise.all(arr
         .map(async (doc: any) => {
-            const totalSnapshots = await getTotalOrder(doc.name);
+            const total = await getTotalOrder(doc.name);
+            const totalSnapshots = total.total;
+            const totalRevenue = total.revenue;
             return {
                 ...doc,
                 id: doc.id,
-                totalOrder: totalSnapshots
+                totalOrder: totalSnapshots,
+                totalRevenue
             }
         }));
     return convertDateOrder(data);

@@ -10,6 +10,8 @@ import Button from "@/utils/components/Button";
 import {toast} from "react-toastify";
 import Pagination from "@/utils/components/Pagination";
 import usePagination from "@/utils/custome-hooks/usePagination";
+import SearchBar from "@/utils/components/SearchBar";
+import {searchCustomer} from "@/services";
 
 interface customerComponent {
     items: any
@@ -42,9 +44,17 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
         }
     }
 
+    const handleSearch = async (searchTerm: string) => {
+        // Perform search or any other action here
+        console.log('Search term:', searchTerm);
+        // const searchedCustomer = await searchCustomer(searchTerm);
+        // setData(searchedCustomer);
+    };
+
     return (
         <div className="flex justify-center p-6">
             <div className="flex flex-col items-start p-6">
+                <SearchBar onSearch={handleSearch}/>
                 <Link href={"/create-order"}>
                     <Button className={buttonStyle + createStyle}>Tạo đơn</Button>
                 </Link>
@@ -70,7 +80,7 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
                                 <td className="py-2 px-4 border-b">{idx + 1}</td>
                                 <td className="py-2 px-4 border-b">{item.name}</td>
                                 <td className="py-2 px-4 border-b">{item.totalOrder}</td>
-                                <td className="py-2 px-4 border-b">0</td>
+                                <td className="py-2 px-4 border-b">{item.totalRevenue}</td>
                                 <td className="py-2 px-4 border-b">{item.phone}</td>
                                 <td className="py-2 px-4 border-b">
                                     <Button className={buttonStyle + viewStyle}>Xem</Button>

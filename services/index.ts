@@ -15,11 +15,14 @@ export async function getCustomersFirstPage() {
     const documentSnapshots = await getDocs(first);
     const data = await Promise.all(documentSnapshots.docs
         .map(async (doc) => {
-            const totalSnapshots = await getTotalOrder(doc.data().name);
+            const total = await getTotalOrder(doc.data().name);
+            const totalSnapshots = total.total;
+            const totalRevenue = total.revenue;
             return {
                 ...doc.data(),
                 id: doc.id,
-                totalOrder: totalSnapshots
+                totalOrder: totalSnapshots,
+                totalRevenue
             }
         }));
     return convertDateOrder(data);
@@ -41,8 +44,36 @@ export async function getOrdersFirstPage() {
     return convertDateOrder(data);
 }
 
-export async function getTotalOrder(name: string) {
-    const getOrdersByCustomers = query(collection(database, "orders"), where("customer", "==", name));
+export async function queryOrdersByCustomers(name: string) {
+    const getOrdersByCustomers = query(
+        collection(database, "orders"),
+        where("customer", "==", name),
+        where('status', '==', 'Xong')
+    );
     const documentSnapshots = await getDocs(getOrdersByCustomers);
-    return documentSnapshots.size;
+    return documentSnapshots
+}
+
+export async function getTotalOrder(name: string) {
+    const snapshot = await queryOrdersByCustomers(name);
+    let revenue = 0;
+    snapshot.docs.map((doc: any) => {
+        revenue += doc.data().total;
+    });
+    return {
+        total: snapshot.size,
+        revenue
+    }
+}
+
+export async function searchCustomer(name: string) {
+    const customers = query(
+        collection(database, "customers"),
+        orderBy("name"), limit(3),
+        where("name", "==", name)
+    );
+    const documentSnapshots = await getDocs(customers);
+    const data = documentSnapshots.docs
+        .map((doc) => ({...doc.data(), id: doc.id}));
+    return convertDateOrder(data);
 }

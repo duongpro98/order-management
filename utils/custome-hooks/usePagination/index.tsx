@@ -15,7 +15,7 @@ import {database} from "@/data/firebase";
 import {getData} from "@/services";
 import {convertDateOrder, processCustomer} from "@/utils/helper/orderHelper";
 
-const usePagination = (setData: any, collectionName: any, order: any, sequence: any, lastElement: any) => {
+const usePagination = (setData: any, collectionName: any, order: any, sequence: any, lastElement: any, condition?: any) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const [lastVisible, setLastVisible] = useState<any>(null);
@@ -25,8 +25,10 @@ const usePagination = (setData: any, collectionName: any, order: any, sequence: 
     const pageSize = 3
 
     const getLast = async () => {
-        const last = await getDoc(doc(database, collectionName, lastElement.id));
-        setLastVisible(last)
+        if(lastElement){
+            const last = await getDoc(doc(database, collectionName, lastElement.id));
+            setLastVisible(last)
+        }
     }
 
     const fetchCustomers = async () => {
@@ -42,7 +44,8 @@ const usePagination = (setData: any, collectionName: any, order: any, sequence: 
                     const next = query(collection(database, collectionName),
                         orderBy(order , sequence),
                         startAfter(lastVisible),
-                        limit(pageSize));
+                        limit(pageSize)
+                    );
                     documentSnapshots = await getDocs(next);
                 }
                 else {
