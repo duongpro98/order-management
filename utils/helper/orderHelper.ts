@@ -1,3 +1,7 @@
+import {collection, getDocs, query, where} from "@firebase/firestore";
+import {database} from "@/data/firebase";
+import {getTotalOrder} from "@/services";
+
 export const calculateTotalPrice = (array: any) => {
     let sum = 0;
     array.forEach((item: any) => {
@@ -23,8 +27,25 @@ export const convertDateOrder = (arr: any) => {
             const date = new Date(obj.date.seconds * 1000);
             convertedObj.date = date;
         }
+        if (obj.createdAt && obj.createdAt.seconds) {
+            const createdAt = new Date(obj.createdAt.seconds * 1000);
+            convertedObj.createdAt = createdAt;
+        }
         return convertedObj;
     });
+}
+
+export const processCustomer = async (arr: any) => {
+    const data = await Promise.all(arr
+        .map(async (doc: any) => {
+            const totalSnapshots = await getTotalOrder(doc.name);
+            return {
+                ...doc,
+                id: doc.id,
+                totalOrder: totalSnapshots
+            }
+        }));
+    return convertDateOrder(data);
 }
 
 export const adjustDateForTimeZone = (date: Date) => {

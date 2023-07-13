@@ -69,7 +69,7 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
                             <tr key={idx}>
                                 <td className="py-2 px-4 border-b">{idx + 1}</td>
                                 <td className="py-2 px-4 border-b">{item.name}</td>
-                                <td className="py-2 px-4 border-b">0</td>
+                                <td className="py-2 px-4 border-b">{item.totalOrder}</td>
                                 <td className="py-2 px-4 border-b">0</td>
                                 <td className="py-2 px-4 border-b">{item.phone}</td>
                                 <td className="py-2 px-4 border-b">

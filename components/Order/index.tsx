@@ -41,7 +41,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
     const [customers, setCustomers] = useState([])
     const [products, setProducts] = useState([])
     const [customer, setCustomer] = useState(item?.customer || "");
-    const [date, setDate] = useState<any>(item?.date || null);
+    const [date, setDate] = useState<any>(item?.date || new Date());
     const [orders, setOrders] = useState<order[]>(item?.orders || []);
     const [loading, setLoading] = useState("");
     const buttonStyle = "text-white font-bold py-2 px-4 rounded-md"
@@ -84,6 +84,10 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
     const handleChangeDate = (date: any) => {
         setDate(date);
     }
+
+    useEffect(() => {
+        console.log("date? ", date)
+    }, [date])
 
     const handleSuccessRequest = (message: string, item?: any) => {
         setTimeout(() => {

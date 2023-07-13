@@ -13,7 +13,7 @@ import {
 } from "@firebase/firestore";
 import {database} from "@/data/firebase";
 import {getData} from "@/services";
-import {convertDateOrder} from "@/utils/helper/orderHelper";
+import {convertDateOrder, processCustomer} from "@/utils/helper/orderHelper";
 
 const usePagination = (setData: any, collectionName: any, order: any, sequence: any, lastElement: any) => {
     const [currentPage, setCurrentPage] = useState(1);
@@ -59,8 +59,10 @@ const usePagination = (setData: any, collectionName: any, order: any, sequence: 
                 id: doc.id,
                 ...doc.data(),
             }));
-            if(collectionName === "orders"){
-                data = convertDateOrder(data)
+            if(collectionName === "customers"){
+                data = await processCustomer(data);
+            }else {
+                data = convertDateOrder(data);
             }
             setData(data);
         } catch (error) {
