@@ -85,10 +85,6 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
         setDate(date);
     }
 
-    useEffect(() => {
-        console.log("date? ", date)
-    }, [date])
-
     const handleSuccessRequest = (message: string, item?: any) => {
         setTimeout(() => {
             setLoading("");

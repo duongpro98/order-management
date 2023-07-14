@@ -1,12 +1,11 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import './styles.css';
-import ArrowDown from "@/utils/icon/ArrowDown";
 
 interface dropdownProps {
     index?: number,
     idx?: number,
     data: any,
-    value?: string,
+    value: string,
     type?: string,
     handleChange?: any;
     isHavingOtherOption?: boolean,
@@ -28,9 +27,27 @@ const DropDown: React.FC<dropdownProps> = (
         handleChangeOther,
         disabled
     }) => {
-    const [selected, setSelected] = useState(value || "Select");
+    const [selected, setSelected] = useState(value || "");
+    const [selectData, setSelectData] = useState(data || []);
     const [open, setOpen] = useState(false);
     const [active, setActive] = useState(false);
+
+    const findValue = (value: string) => {
+        const matchSelects = data.filter((item: any) => item.name.toLowerCase().includes(value.toLowerCase()));
+        if(matchSelects.length > 0){
+            setSelectData(matchSelects);
+        }else {
+            setSelectData([])
+        }
+    }
+
+    useEffect(() => {
+        if(selected){
+            findValue(selected);
+        }else {
+            setSelectData(data);
+        }
+    }, [data])
 
     const handleSelect = (value: string) => {
         setSelected(value);
@@ -54,23 +71,27 @@ const DropDown: React.FC<dropdownProps> = (
         }, 200)
     }
 
+    const handleChangeValue = (value: string) => {
+        setSelected(value);
+        findValue(value);
+    }
+
     return (
         <div className={`container mt-2`} style={{
             zIndex: index? index: ''
         }}>
-            <button
+            <input
                 onClick={() => handleClickSelect()}
                 onBlur={() => handleClose()}
                 className={`select ${active ? 'active' : ''}`}
-                type={'button'}
+                value={selected}
+                placeholder={"Select"}
                 disabled={disabled}
-            >
-                <p className={`text-value`}>{selected}</p>
-                <ArrowDown />
-            </button>
+                onChange={(e) => handleChangeValue(e.target.value)}
+            />
             <div className={`option-wrapper mt-3 ${!open ? 'not-active' : ''}`}>
                 {
-                    data.map((item: any, idx: number) => (
+                    selectData.map((item: any, idx: number) => (
                         <div className={`option`} key={idx} onClick={() => {
                             handleSelect(item.name)
                             // if(isHavingOtherOption){

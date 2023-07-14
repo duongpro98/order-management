@@ -37,7 +37,6 @@
 .select{
     display: flex;
     align-items: center;
-    cursor: pointer;
     justify-content: space-between;
     border: 1px solid #DDDEE1;
     border-radius: 8px;
