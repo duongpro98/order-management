@@ -83,3 +83,16 @@ export async function searchProduct(name: string) {
     const matchData = data.filter((item: any) => item.name.includes(name));
     return convertDateOrder(matchData);
 }
+
+export async function searchOrder(start: any, end: any) {
+    const orderRef = collection(database, "orders");
+    const queryOrder = query(
+        orderRef,
+        where('date', '>=', start),
+        where('date', '<=', end)
+    );
+    const documentSnapshots = await getDocs(queryOrder);
+    const data = documentSnapshots.docs
+        .map((doc) => ({...doc.data(), id: doc.id}));
+    return convertDateOrder(data);
+}

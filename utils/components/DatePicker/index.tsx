@@ -6,7 +6,7 @@ import {adjustDateForTimeZone, convertDate} from "@/utils/helper/orderHelper";
 interface datePickerObj {
     value: string
     handleChangeValue?: any
-    disabled: boolean
+    disabled?: boolean
 }
 
 const MyDatePicker: React.FC<datePickerObj> = ({ value, handleChangeValue, disabled }) => {

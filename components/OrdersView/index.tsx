@@ -11,6 +11,8 @@ import {toast} from "react-toastify";
 import usePagination from "@/utils/custome-hooks/usePagination";
 import {format} from "date-fns";
 import Pagination from "@/utils/components/Pagination";
+import MyDatePicker from "@/utils/components/DatePicker";
+import {searchOrder} from "@/services";
 
 interface orderComponent {
     listOrders: any
@@ -20,6 +22,8 @@ const Orders: React.FC<orderComponent> = ({listOrders}) => {
     const [data, setData] = useState(listOrders);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
     const {
         currentPage,
         totalPages,
@@ -73,10 +77,41 @@ const Orders: React.FC<orderComponent> = ({listOrders}) => {
         setSelectedItem(item);
     }
 
+    const handleChangeStartDate = (date: any) => {
+        setStartDate(date);
+    }
+
+    const handleChangeEndDate = (date: any) => {
+        setEndDate(date);
+    }
+
+    const handleSearchOrder = async () => {
+        const searchedOrder = await searchOrder(startDate, endDate);
+        setData(searchedOrder)
+    }
+
     return (
         <>
             <div className="flex justify-center p-6">
                 <div className="flex flex-col items-start p-6">
+                    <div className="flex items-center">
+                        <MyDatePicker value={startDate} handleChangeValue={handleChangeStartDate}/>
+                        <div className="mx-5">Đến</div>
+                        <MyDatePicker value={endDate} handleChangeValue={handleChangeEndDate}/>
+                        <button
+                            type="button"
+                            className="ml-5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg px-4 py-2"
+                            onClick={() => handleSearchOrder()}
+                        >
+                            Tìm
+                        </button>
+                        <button
+                            type="button"
+                            className="ml-5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg px-4 py-2"
+                        >
+                            Hủy tìm
+                        </button>
+                    </div>
                     <table className="table-auto bg-white">
                         <thead>
                         <tr>
