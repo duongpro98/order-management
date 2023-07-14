@@ -4,7 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import {adjustDateForTimeZone, convertDate} from "@/utils/helper/orderHelper";
 
 interface datePickerObj {
-    value: string
+    value: any
     handleChangeValue?: any
     disabled?: boolean
 }
