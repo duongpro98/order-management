@@ -19,6 +19,8 @@ interface customerComponent {
 
 const Customers:React.FC<customerComponent> = ({ items }) => {
     const [data, setData] = useState<any[]>(items || []);
+    const [searching, setSearching] = useState(false);
+    const [dataBeforeSearch, setDataBeforeSearch] = useState<any[]>([]);
     const {
         currentPage,
         totalPages,
@@ -45,16 +47,23 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
     }
 
     const handleSearch = async (searchTerm: string) => {
-        // Perform search or any other action here
-        console.log('Search term:', searchTerm);
-        // const searchedCustomer = await searchCustomer(searchTerm);
-        // setData(searchedCustomer);
+        if(searchTerm){
+            const searchedCustomer = await searchCustomer(searchTerm);
+            setDataBeforeSearch(data);
+            setData(searchedCustomer);
+            setSearching(true);
+        }
     };
+
+    const handleCloseSearch = () => {
+        setData(dataBeforeSearch);
+        setSearching(false);
+    }
 
     return (
         <div className="flex justify-center p-6">
             <div className="flex flex-col items-start p-6">
-                <SearchBar onSearch={handleSearch}/>
+                <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch}/>
                 <Link href={"/create-order"}>
                     <Button className={buttonStyle + createStyle}>Tạo đơn</Button>
                 </Link>
@@ -98,12 +107,16 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
                     }
                     </tbody>
                 </table>
-                <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    handlePreviousPage={handlePreviousPage}
-                    handleNextPage={handleNextPage}
-                />
+                {
+                    !searching && (
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            handlePreviousPage={handlePreviousPage}
+                            handleNextPage={handleNextPage}
+                        />
+                    )
+                }
             </div>
         </div>
     )

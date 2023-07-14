@@ -1,5 +1,5 @@
 import {collection, getDocs, limit, orderBy, query, where} from "@firebase/firestore";
-import {convertDateOrder} from "@/utils/helper/orderHelper";
+import {convertDateOrder, processCustomer} from "@/utils/helper/orderHelper";
 import {database} from "../data/firebase";
 
 export async function getData(collectionName: string){
@@ -67,13 +67,19 @@ export async function getTotalOrder(name: string) {
 }
 
 export async function searchCustomer(name: string) {
-    const customers = query(
-        collection(database, "customers"),
-        orderBy("name"), limit(3),
-        where("name", "==", name)
-    );
+    const customers = collection(database, "customers");
     const documentSnapshots = await getDocs(customers);
     const data = documentSnapshots.docs
         .map((doc) => ({...doc.data(), id: doc.id}));
-    return convertDateOrder(data);
+    const matchData = data.filter((item: any) => item.name.includes(name));
+    return processCustomer(matchData);
+}
+
+export async function searchProduct(name: string) {
+    const products = collection(database, "products");
+    const documentSnapshots = await getDocs(products);
+    const data = documentSnapshots.docs
+        .map((doc) => ({...doc.data(), id: doc.id}));
+    const matchData = data.filter((item: any) => item.name.includes(name));
+    return convertDateOrder(matchData);
 }

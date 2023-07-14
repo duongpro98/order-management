@@ -4,11 +4,13 @@ import {deleteDoc, doc, setDoc} from '@firebase/firestore';
 import React, {useState} from 'react';
 import Link from "next/link";
 import Button from "@/utils/components/Button";
-import {getData} from "@/services";
+import {getData, searchProduct} from "@/services";
 import {toast} from "react-toastify";
 import Popup from "@/utils/components/Popup";
 import usePagination from "@/utils/custome-hooks/usePagination";
 import Pagination from "@/utils/components/Pagination";
+import SearchBar from "@/utils/components/SearchBar";
+import {convertDateOrder} from "@/utils/helper/orderHelper";
 
 interface productComponent {
     items: any
@@ -16,6 +18,8 @@ interface productComponent {
 
 const Products:React.FC<productComponent> = ({ items }) => {
     const [data, setData] = useState<any[]>(items || []);
+    const [searching, setSearching] = useState(false);
+    const [dataBeforeSearch, setDataBeforeSearch] = useState<any[]>([]);
     const [popupStatus, setPopupStatus] = useState("");
     const [selectedItem, setSelectedItem] = useState(null);
     const {
@@ -29,9 +33,24 @@ const Products:React.FC<productComponent> = ({ items }) => {
     const deleteStyle = " bg-red-500 hover:bg-red-400"
     const createStyle = " bg-green-500 hover:bg-green-400"
 
-    const refreshData = async () => {
-        const newData = await getData("products");
-        setData(newData);
+    const refreshData = async (id: string, item: any) => {
+        try {
+            console.log("item ", item)
+            let itemUpdate = data.map((it: any) => {
+                if(it.id === id){
+                    return  {
+                        ...it,
+                        ...item
+                    }
+                }
+                else {
+                    return it
+                }
+            });
+            setData(convertDateOrder(itemUpdate));
+        } catch (err: any) {
+            toast.error(err.message)
+        }
     }
 
     const handleUpdate = async (id: string, data: any) => {
@@ -40,7 +59,7 @@ const Products:React.FC<productComponent> = ({ items }) => {
             const productRef: any = doc(database, "products", id);
             await setDoc(productRef, data);
             // refresh the data
-            await refreshData();
+            await refreshData(id, data);
             toast.success("Cập nhật thành công");
             handleClosePopUp();
         }catch (err: any){
@@ -54,7 +73,8 @@ const Products:React.FC<productComponent> = ({ items }) => {
             const productDelete = doc(database, "products", id);
             await deleteDoc(productDelete);
             // refresh the data
-            await refreshData();
+            const newArray = data.filter(obj => obj.id !== id);
+            setData(newArray)
             toast.success("Xóa thành công");
             handleClosePopUp();
         } catch (err: any) {
@@ -71,10 +91,25 @@ const Products:React.FC<productComponent> = ({ items }) => {
         setPopupStatus("");
     }
 
+    const handleSearch = async (searchTerm: string) => {
+        if(searchTerm){
+            const searchedProduct = await searchProduct(searchTerm);
+            setDataBeforeSearch(data);
+            setData(searchedProduct);
+            setSearching(true);
+        }
+    };
+
+    const handleCloseSearch = () => {
+        setData(dataBeforeSearch);
+        setSearching(false);
+    }
+
     return (
         <>
             <div className="flex justify-center p-6">
                 <div className="flex flex-col items-start p-6">
+                    <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch}/>
                     <table className="table-auto bg-white">
                         <thead>
                         <tr>
@@ -116,12 +151,16 @@ const Products:React.FC<productComponent> = ({ items }) => {
                         }
                         </tbody>
                     </table>
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        handlePreviousPage={handlePreviousPage}
-                        handleNextPage={handleNextPage}
-                    />
+                    {
+                        !searching && (
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                handlePreviousPage={handlePreviousPage}
+                                handleNextPage={handleNextPage}
+                            />
+                        )
+                    }
                 </div>
             </div>
 

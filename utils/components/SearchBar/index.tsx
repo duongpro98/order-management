@@ -3,9 +3,11 @@ import SearchIcon from "@/utils/icon/SearchIcon";
 
 interface SearchBarProps {
     onSearch: (searchTerm: string) => void;
+    searching?: boolean;
+    onCancelSearch: () => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, searching, onCancelSearch }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,8 +37,19 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
                 type="submit"
                 className="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg px-4 py-2"
             >
-                Search
+                Tìm
             </button>
+            {
+                searching && (
+                    <button
+                        type="button"
+                        className="ml-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg px-4 py-2"
+                        onClick={onCancelSearch}
+                    >
+                        Hủy tìm
+                    </button>
+                )
+            }
         </form>
     );
 };
