@@ -4,7 +4,7 @@ import Link from "next/link";
 import Button from "@/utils/components/Button";
 import {deleteDoc, doc} from "@firebase/firestore";
 import {database} from "@/data/firebase";
-import {calculateTotalPrice, convertDateOrder} from "@/utils/helper/orderHelper";
+import {calculateTotalPrice, convertDateOrder, convertStartEnd} from "@/utils/helper/orderHelper";
 import Popup from "@/utils/components/Popup";
 import CreateOrder from "@/components/Order";
 import {toast} from "react-toastify";
@@ -12,18 +12,19 @@ import usePagination from "@/utils/custome-hooks/usePagination";
 import {format} from "date-fns";
 import Pagination from "@/utils/components/Pagination";
 import MyDatePicker from "@/utils/components/DatePicker";
-import {searchOrder} from "@/services";
+import {searchCustomer, searchOrder} from "@/services";
+import SearchBar from "@/utils/components/SearchBar";
 
 interface orderComponent {
     listOrders: any
 }
 
 const Orders: React.FC<orderComponent> = ({listOrders}) => {
-    const [data, setData] = useState(listOrders);
+    const [data, setData] = useState<any[]>(listOrders || []);
     const [openEdit, setOpenEdit] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
-    const [startDate, setStartDate] = useState(null);
-    const [endDate, setEndDate] = useState(null);
+    const [searching, setSearching] = useState(false);
+    const [dataBeforeSearch, setDataBeforeSearch] = useState<any[]>([]);
     const {
         currentPage,
         totalPages,
@@ -77,41 +78,25 @@ const Orders: React.FC<orderComponent> = ({listOrders}) => {
         setSelectedItem(item);
     }
 
-    const handleChangeStartDate = (date: any) => {
-        setStartDate(date);
-    }
+    const handleSearch = async (start: any, end: any) => {
+        if(start && end){
+            const searchedOrder = await searchOrder(start, end);
+            setDataBeforeSearch(data);
+            setData(searchedOrder);
+            setSearching(true);
+        }
+    };
 
-    const handleChangeEndDate = (date: any) => {
-        setEndDate(date);
-    }
-
-    const handleSearchOrder = async () => {
-        const searchedOrder = await searchOrder(startDate, endDate);
-        setData(searchedOrder)
+    const handleCloseSearch = () => {
+        setData(dataBeforeSearch);
+        setSearching(false);
     }
 
     return (
         <>
             <div className="flex justify-center p-6">
                 <div className="flex flex-col items-start p-6">
-                    <div className="flex items-center">
-                        <MyDatePicker value={startDate} handleChangeValue={handleChangeStartDate}/>
-                        <div className="mx-5">Đến</div>
-                        <MyDatePicker value={endDate} handleChangeValue={handleChangeEndDate}/>
-                        <button
-                            type="button"
-                            className="ml-5 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg px-4 py-2"
-                            onClick={() => handleSearchOrder()}
-                        >
-                            Tìm
-                        </button>
-                        <button
-                            type="button"
-                            className="ml-5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg px-4 py-2"
-                        >
-                            Hủy tìm
-                        </button>
-                    </div>
+                    <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch} searchType={"date"}/>
                     <table className="table-auto bg-white">
                         <thead>
                         <tr>
@@ -159,12 +144,16 @@ const Orders: React.FC<orderComponent> = ({listOrders}) => {
                         }
                         </tbody>
                     </table>
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        handlePreviousPage={handlePreviousPage}
-                        handleNextPage={handleNextPage}
-                    />
+                    {
+                        !searching && (
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                handlePreviousPage={handlePreviousPage}
+                                handleNextPage={handleNextPage}
+                            />
+                        )
+                    }
                 </div>
             </div>
             {

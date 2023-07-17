@@ -63,7 +63,7 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
     return (
         <div className="flex justify-center p-6">
             <div className="flex flex-col items-start p-6">
-                <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch}/>
+                <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch} searchType={"text"}/>
                 <Link href={"/create-order"}>
                     <Button className={buttonStyle + createStyle}>Tạo đơn</Button>
                 </Link>

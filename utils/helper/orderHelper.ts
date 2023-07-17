@@ -80,3 +80,13 @@ export const convertArray = (orderData: any) => {
 
     return aggregatedArray;
 }
+
+export const convertStartEnd = (inputDate: any, type: string) => {
+    let convertedDate;
+    if(type === "start"){
+        convertedDate = new Date(inputDate.setHours(0, 0, 0)); // Convert to 00:00:00
+    }else {
+        convertedDate = new Date(inputDate.setHours(23, 59, 59)); // Convert to 23:59:59
+    }
+    return convertedDate;
+}

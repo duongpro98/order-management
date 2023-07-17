@@ -109,7 +109,7 @@ const Products:React.FC<productComponent> = ({ items }) => {
         <>
             <div className="flex justify-center p-6">
                 <div className="flex flex-col items-start p-6">
-                    <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch}/>
+                    <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch} searchType={"text"}/>
                     <table className="table-auto bg-white">
                         <thead>
                         <tr>
