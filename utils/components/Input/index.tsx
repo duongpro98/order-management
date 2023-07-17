@@ -21,9 +21,10 @@ const Input: React.FC<InputProps> = ({ label, value, placeHolder , onlyNumber , 
         if(onlyNumber){
             const keyCode = event.keyCode || event.which;
             const keyValue = String.fromCharCode(keyCode);
-            const regex = /[0-9]/; // Regular expression to allow only numeric characters
+            const newValue = value + keyValue;
+            const regex = /^\d*\.?\d*$/; // Regular expression to allow numeric and float numbers
 
-            if (!regex.test(keyValue)) {
+            if (!regex.test(newValue)) {
                 event.preventDefault();
             }
         }
