@@ -1,5 +1,3 @@
-import {collection, getDocs, query, where} from "@firebase/firestore";
-import {database} from "@/data/firebase";
 import {getTotalOrder} from "@/services";
 
 export const calculateTotalPrice = (array: any) => {

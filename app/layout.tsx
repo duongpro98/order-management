@@ -4,6 +4,7 @@ import '../styles/fonts.css'
 import Header from "@/components/Header";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import {NextAuthProvider} from "@/app/provider";
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -14,15 +15,19 @@ export const metadata = {
 
 export default function RootLayout({
   children,
+  session
 }: {
-  children: React.ReactNode
+  children: React.ReactNode,
+  session: any
 }) {
   return (
     <html lang="en">
       <body>
-      <Header/>
-      <ToastContainer autoClose={2000} theme="colored"/>
-      {children}
+      <NextAuthProvider session={session}>
+          <Header/>
+          <ToastContainer autoClose={2000} theme="colored"/>
+          {children}
+      </NextAuthProvider>
       </body>
     </html>
   )

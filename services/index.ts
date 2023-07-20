@@ -96,3 +96,24 @@ export async function searchOrder(start: any, end: any) {
         .map((doc) => ({...doc.data(), id: doc.id}));
     return convertDateOrder(data);
 }
+
+export async function getUser(username: string, password: string) {
+    const userRef = collection(database, "users");
+    const queryUser = query(userRef, where('name', '==', username));
+    const documentSnapshots = await getDocs(queryUser);
+    if(documentSnapshots.size > 0){
+        const data = documentSnapshots.docs
+            .map((doc) => ({...doc.data(), id: doc.id}));
+        const user = data[0] as any;
+        if(password !== user.password){
+            return null;
+        }
+
+        return {
+            id: user.id,
+            name: user.name,
+            img: user.img
+        };
+    }
+    return null
+}
