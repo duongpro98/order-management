@@ -10,7 +10,7 @@ const Login: React.FC = () => {
     const emailRef = useRef<any>(null);
     const searchParams = useSearchParams()
 
-    const search = searchParams.get('callbackUrl');
+    const search = searchParams?.get('callbackUrl');
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
