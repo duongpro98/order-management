@@ -26,7 +26,7 @@ export const authOptions: NextAuthOptions = {
     },
     session: {
         jwt: true,
-        maxAge: 60
+        maxAge: 1* 60 * 60
     } as any,
     callbacks: {
         async session({session, token}: any) {
