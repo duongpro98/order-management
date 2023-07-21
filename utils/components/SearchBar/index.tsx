@@ -37,14 +37,14 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, searching, onCancelSear
     }
 
     return (
-        <form onSubmit={handleFormSubmit} className="flex items-center mb-5">
+        <form onSubmit={handleFormSubmit} className="flex flex-col items-start mb-5 md:flex-row md:items-center">
             {
                 searchType === "date"? (
-                    <>
-                        <MyDatePicker value={startDate} handleChangeValue={handleChangeStartDate}/>
-                        <div className="mx-5">Đến</div>
-                        <MyDatePicker value={endDate} handleChangeValue={handleChangeEndDate}/>
-                    </>
+                    <div className="flex flex-col items-start md:flex-row md:items-center">
+                        <MyDatePicker value={startDate} handleChangeValue={handleChangeStartDate} zIndex={50}/>
+                        <div className="mx-2 my-3">Đến</div>
+                        <MyDatePicker value={endDate} handleChangeValue={handleChangeEndDate} zIndex={40}/>
+                    </div>
                 ): (
                     <div className="relative">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -60,23 +60,25 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, searching, onCancelSear
                     </div>
                 )
             }
-            <button
-                type="submit"
-                className="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg px-4 py-2"
-            >
-                Tìm
-            </button>
-            {
-                searching && (
-                    <button
-                        type="button"
-                        className="ml-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg px-4 py-2"
-                        onClick={onCancelSearch}
-                    >
-                        Hủy tìm
-                    </button>
-                )
-            }
+            <div className="flex items-center mt-3 ml-0 md:mt-0 md:ml-2">
+                <button
+                    type="submit"
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg px-4 py-2"
+                >
+                    Tìm
+                </button>
+                {
+                    searching && (
+                        <button
+                            type="button"
+                            className="ml-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg px-4 py-2"
+                            onClick={onCancelSearch}
+                        >
+                            Hủy tìm
+                        </button>
+                    )
+                }
+            </div>
         </form>
     );
 };

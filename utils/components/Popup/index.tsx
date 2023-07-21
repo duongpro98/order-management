@@ -39,22 +39,13 @@ const Popup: React.FC<PopupProps> = ({ isOpen, item, type, onClose, onDelete, on
     }
 
     return (
-        <div className={`fixed inset-0 flex items-center justify-center ${isOpen ? '' : 'hidden'}`}>
+        <div className={`fixed inset-0 flex items-center justify-center ${isOpen ? '' : 'hidden'}`} style={{ zIndex: 100 }}>
             <div className="fixed inset-0 bg-gray-900 opacity-75 z-10"></div>
             <div className="bg-white p-8 rounded shadow-lg z-50">
                 {
                     children ? (
                         <>
                             {children}
-                            {/*<button className="mt-4 mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={handleUpdateProduct}>*/}
-                            {/*    Có*/}
-                            {/*</button>*/}
-                            {/*<button className="mt-4 mr-5 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onClick={onClose}>*/}
-                            {/*    Sửa*/}
-                            {/*</button>*/}
-                            {/*<button className="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded" onClick={onClose}>*/}
-                            {/*    Chốt*/}
-                            {/*</button>*/}
                         </>
                     ): (
                         <>

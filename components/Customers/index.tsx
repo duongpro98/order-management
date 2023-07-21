@@ -62,61 +62,65 @@ const Customers:React.FC<customerComponent> = ({ items }) => {
 
     return (
         <div className="flex justify-center p-6">
-            <div className="flex flex-col items-start p-6">
-                <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch} searchType={"text"}/>
-                <Link href={"/create-order"}>
-                    <Button className={buttonStyle + createStyle}>Tạo đơn</Button>
-                </Link>
-                <table className="table-auto bg-white">
-                    <thead>
-                    <tr>
-                        <th className="py-2 px-4 border-b text-left">Stt</th>
-                        <th className="py-2 px-4 border-b text-left">Tên khách hàng</th>
-                        <th className="py-2 px-4 border-b text-left">Tổng hóa đơn</th>
-                        <th className="py-2 px-4 border-b text-left">Tổng doanh thu</th>
-                        <th className="py-2 px-4 border-b text-left">Sđt</th>
-                        <th className="py-2 px-4 border-b text-left">
-                            <Link href={"/create"}>
-                                <Button className={buttonStyle + createStyle}>Tạo</Button>
-                            </Link>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {
-                        data.map((item, idx) => (
-                            <tr key={idx}>
-                                <td className="py-2 px-4 border-b">{idx + 1}</td>
-                                <td className="py-2 px-4 border-b">{item.name}</td>
-                                <td className="py-2 px-4 border-b">{item.totalOrder}</td>
-                                <td className="py-2 px-4 border-b">{item.totalRevenue}</td>
-                                <td className="py-2 px-4 border-b">{item.phone}</td>
-                                <td className="py-2 px-4 border-b">
-                                    <Button className={buttonStyle + viewStyle}>Xem</Button>
-                                </td>
-                                <td className="py-2 px-4 border-b">
-                                    <Button
-                                        className={buttonStyle + deleteStyle}
-                                        onClick={() => handleDelete(item.id)}
-                                    >
-                                        Xóa
-                                    </Button>
-                                </td>
+            <div className="flex flex-col items-center p-6 w-full">
+                <div className="flex flex-col max-w-full">
+                    <SearchBar onSearch={handleSearch} searching={searching} onCancelSearch={handleCloseSearch} searchType={"text"}/>
+                    <Link href={"/create-order"}>
+                        <Button className={buttonStyle + createStyle}>Tạo đơn</Button>
+                    </Link>
+                    <div className="flex max-w-full overflow-x-auto">
+                        <table className="table-auto bg-white">
+                            <thead>
+                            <tr>
+                                <th className="py-2 px-4 border-b text-left">Stt</th>
+                                <th className="py-2 px-4 border-b text-left">Tên khách hàng</th>
+                                <th className="py-2 px-4 border-b text-left">Tổng hóa đơn</th>
+                                <th className="py-2 px-4 border-b text-left">Tổng doanh thu</th>
+                                <th className="py-2 px-4 border-b text-left">Sđt</th>
+                                <th className="py-2 px-4 border-b text-left">
+                                    <Link href={"/create"}>
+                                        <Button className={buttonStyle + createStyle}>Tạo</Button>
+                                    </Link>
+                                </th>
                             </tr>
-                        ))
+                            </thead>
+                            <tbody>
+                            {
+                                data.map((item, idx) => (
+                                    <tr key={idx}>
+                                        <td className="py-2 px-4 border-b">{idx + 1}</td>
+                                        <td className="py-2 px-4 border-b">{item.name}</td>
+                                        <td className="py-2 px-4 border-b">{item.totalOrder}</td>
+                                        <td className="py-2 px-4 border-b">{item.totalRevenue}</td>
+                                        <td className="py-2 px-4 border-b">{item.phone}</td>
+                                        <td className="py-2 px-4 border-b">
+                                            <Button className={buttonStyle + viewStyle}>Xem</Button>
+                                        </td>
+                                        <td className="py-2 px-4 border-b">
+                                            <Button
+                                                className={buttonStyle + deleteStyle}
+                                                onClick={() => handleDelete(item.id)}
+                                            >
+                                                Xóa
+                                            </Button>
+                                        </td>
+                                    </tr>
+                                ))
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                    {
+                        !searching && (
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                handlePreviousPage={handlePreviousPage}
+                                handleNextPage={handleNextPage}
+                            />
+                        )
                     }
-                    </tbody>
-                </table>
-                {
-                    !searching && (
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            handlePreviousPage={handlePreviousPage}
-                            handleNextPage={handleNextPage}
-                        />
-                    )
-                }
+                </div>
             </div>
         </div>
     )

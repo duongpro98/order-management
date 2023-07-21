@@ -14,6 +14,12 @@ module.exports = {
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
     },
+    fontFamily: {
+      'quick-san': ['Quick Sans', 'sans-serif']
+    },
+    zIndex: {
+      '101': '101'
+    }
   },
   plugins: [],
 }

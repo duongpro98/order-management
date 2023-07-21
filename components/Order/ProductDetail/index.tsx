@@ -31,19 +31,19 @@ const ProductDetail:React.FC<productDetailComponent> = ({ item, index, priority,
     return (
         <div className={`flex flex-col ${priority > 0? 'mt-3': ''}`}>
             <div className="grid grid-cols-12 gap-3 items-center">
-                <div className="col-span-4">
+                <div className="col-span-12 md:col-span-4">
                     <div className={'font-bold'}>Product: </div>
                     <DropDown data={listProducts} value={item.name} index={index} idx={priority} handleChangeOther={handleChangeOrder} disabled={isFinished}/>
                 </div>
-                <div className="col-span-3">
+                <div className="col-span-6 md:col-span-3">
                     <Input label={"Amount"} value={amount} onChange={handleChangeAmount} onlyNumber={true} disabled={isFinished}/>
                 </div>
-                <div className="col-span-3">
+                <div className="col-span-6 md:col-span-3">
                     <Input label={"Price"} value={price} onChange={handleChangePrice} onlyNumber={true} disabled={isFinished}/>
                 </div>
                 {
                     !isFinished && (
-                        <div className="col-span-2">
+                        <div className="col-span-3 md:col-span-2">
                             <Button className="text-white font-bold py-2 px-4 rounded-md bg-red-500 hover:bg-red-400" onClick={deleteOrder}>Xóa</Button>
                         </div>
                     )

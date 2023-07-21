@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import {adjustDateForTimeZone, convertDate} from "@/utils/helper/orderHelper";
 
 interface datePickerObj {
     value: any
     handleChangeValue?: any
     disabled?: boolean
+    zIndex?: number
 }
 
-const MyDatePicker: React.FC<datePickerObj> = ({ value, handleChangeValue, disabled }) => {
+const MyDatePicker: React.FC<datePickerObj> = ({ value, handleChangeValue, disabled, zIndex }) => {
     // const [selectedDate, setSelectedDate] = useState(value? adjustDateForTimeZone(new Date(convertDate(value))): new Date());
     const [selectedDate, setSelectedDate] = useState<any>(value || new Date());
 
@@ -20,7 +20,7 @@ const MyDatePicker: React.FC<datePickerObj> = ({ value, handleChangeValue, disab
     };
 
     return (
-        <div className="flex items-center relative z-50">
+        <div className={`flex items-center relative z-${zIndex || 50}`}>
             <DatePicker
                 selected={selectedDate}
                 onChange={handleDateChange}

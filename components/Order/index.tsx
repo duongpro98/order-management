@@ -200,7 +200,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
 
     return (
         <>
-            <form className="max-w-xl mx-auto" onSubmit={handleSubmit}>
+            <form className="max-w-xs mx-auto sm:max-w-sm md:max-w-xl" onSubmit={handleSubmit}>
                 {/*Customer*/}
                 <div className="mb-4">
                     <div className={'font-bold mb-1'}>Customer: </div>
@@ -220,7 +220,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
                             <ProductDetail
                                 listProducts={products}
                                 key={order.id}
-                                index={48 - idx}
+                                index={38 - idx}
                                 priority={idx}
                                 item={order}
                                 handleChangeOrder={handleChangeOrder}

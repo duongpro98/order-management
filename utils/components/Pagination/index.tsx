@@ -9,7 +9,7 @@ interface paginationObj {
 
 const Pagination: React.FC<paginationObj> = ({ currentPage, totalPages, handleNextPage, handlePreviousPage }) => {
     return (
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center mt-4">
             <button
                 onClick={handlePreviousPage}
                 disabled={currentPage === 1}
@@ -17,7 +17,7 @@ const Pagination: React.FC<paginationObj> = ({ currentPage, totalPages, handleNe
                     currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
             >
-                Previous Page
+                Previous
             </button>
             <div className="mx-5">
                 <span>{currentPage}</span> / <span>{totalPages}</span>
@@ -29,7 +29,7 @@ const Pagination: React.FC<paginationObj> = ({ currentPage, totalPages, handleNe
                     currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
             >
-                Next Page
+                Next
             </button>
         </div>
     );

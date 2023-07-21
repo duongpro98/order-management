@@ -1,16 +1,24 @@
 'use client'
 
-import React, { useRef } from 'react';
-import {signIn} from "next-auth/react";
-import {useSearchParams} from "next/navigation";
+import React, {useEffect, useRef} from 'react';
+import {signIn, useSession} from "next-auth/react";
+import {useSearchParams, useRouter} from "next/navigation";
 
 
 const Login: React.FC = () => {
     const usernameRef = useRef<any>(null);
     const emailRef = useRef<any>(null);
+    const {data: session} = useSession();
+    const router = useRouter();
     const searchParams = useSearchParams()
 
     const search = searchParams?.get('callbackUrl');
+
+    useEffect(() => {
+        if(session){
+            router.push("/");
+        }
+    }, [session]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -27,8 +35,8 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-1/3">
+        <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+            <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-xs sm:max-w-md">
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="username">
                         Username

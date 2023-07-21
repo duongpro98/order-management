@@ -45,7 +45,7 @@ export default function CreateProduct() {
     }
 
     return (
-        <form className="max-w-sm mx-auto" onSubmit={handleSubmit}>
+        <form className="max-w-xs mx-auto sm:max-w-sm" onSubmit={handleSubmit}>
             <div className="mb-4">
                 <Input label={"Name"} value={name} onChange={handleNameChange}/>
             </div>
