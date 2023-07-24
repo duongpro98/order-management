@@ -39,9 +39,9 @@ const Popup: React.FC<PopupProps> = ({ isOpen, item, type, onClose, onDelete, on
     }
 
     return (
-        <div className={`fixed inset-0 flex items-center justify-center ${isOpen ? '' : 'hidden'} overflow-scroll`} style={{ zIndex: 100 }}>
+        <div className={`fixed inset-0 flex items-center justify-center ${isOpen ? '' : 'hidden'}`} style={{ zIndex: 100 }}>
             <div className="fixed inset-0 bg-gray-900 opacity-75 z-10"></div>
-            <div className="bg-white p-8 rounded shadow-lg z-101">
+            <div className="my-8 bg-white p-8 rounded shadow-lg z-101 max-h-screen overflow-y-scroll">
                 {
                     children ? (
                         <>
