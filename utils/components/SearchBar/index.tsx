@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import SearchIcon from "@/utils/icon/SearchIcon";
 import MyDatePicker from "@/utils/components/DatePicker";
 import {convertStartEnd} from "@/utils/helper/orderHelper";
+import DropDown from "@/utils/components/DropDown";
+import {getData} from "@/services";
+import {toast} from "react-toastify";
 
 interface SearchBarProps {
     onSearch: any;
@@ -12,6 +15,8 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, searching, onCancelSearch, searchType }) => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [customers, setCustomers] = useState([]);
+    const [customer, setCustomer] = useState("");
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
 
@@ -22,7 +27,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, searching, onCancelSear
     const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         if(searchType === "date"){
-            onSearch(convertStartEnd(startDate, "start"), convertStartEnd(endDate, "end"));
+            onSearch(convertStartEnd(startDate, "start"), convertStartEnd(endDate, "end"), customer);
         }else {
             onSearch(searchTerm);
         }
@@ -36,14 +41,36 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, searching, onCancelSear
         setEndDate(date);
     }
 
+    const handleChangeCustomer = (value: string) => {
+        setCustomer(value);
+    }
+
+    useEffect(() => {
+        const fetch = async () => {
+            try{
+                const customersFetch: any = await getData("customers");
+                setCustomers(customersFetch);
+            }
+            catch (e: any) {
+                toast.error(e.message);
+            }
+        }
+        fetch();
+    }, [])
+
     return (
-        <form onSubmit={handleFormSubmit} className="flex flex-col items-start mb-5 md:flex-row md:items-center">
+        <form onSubmit={handleFormSubmit} className="flex flex-col items-start mb-5 md:flex-row md:items-start">
             {
                 searchType === "date"? (
-                    <div className="flex flex-col items-start md:flex-row md:items-center">
-                        <MyDatePicker value={startDate} handleChangeValue={handleChangeStartDate} zIndex={50}/>
-                        <div className="mx-2 my-3">Đến</div>
-                        <MyDatePicker value={endDate} handleChangeValue={handleChangeEndDate} zIndex={40}/>
+                    <div className="flex flex-col">
+                        <div className="flex flex-col items-start md:flex-row md:items-center">
+                            <MyDatePicker value={startDate} handleChangeValue={handleChangeStartDate} zIndex={50}/>
+                            <div className="mx-2 my-3 md:my-0">Đến</div>
+                            <MyDatePicker value={endDate} handleChangeValue={handleChangeEndDate} zIndex={40}/>
+                        </div>
+                        <div>
+                            <DropDown data={customers} placeHolder={"Khách hàng"} value={customer} index={39} handleChange={handleChangeCustomer}/>
+                        </div>
                     </div>
                 ): (
                     <div className="relative">

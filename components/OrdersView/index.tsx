@@ -4,7 +4,7 @@ import Link from "next/link";
 import Button from "@/utils/components/Button";
 import {deleteDoc, doc} from "@firebase/firestore";
 import {database} from "@/data/firebase";
-import {calculateTotalPrice, convertDateOrder} from "@/utils/helper/orderHelper";
+import {calculateTotalPrice, convertDateOrder, formatToVND} from "@/utils/helper/orderHelper";
 import Popup from "@/utils/components/Popup";
 import CreateOrder from "@/components/Order";
 import {toast} from "react-toastify";
@@ -20,7 +20,7 @@ interface orderComponent {
 
 const Orders: React.FC<orderComponent> = ({listOrders}) => {
     const [data, setData] = useState<any[]>(listOrders || []);
-    const [openEdit, setOpenEdit] = useState(false);
+    const [popupStatus, setPopupStatus] = useState("");
     const [selectedItem, setSelectedItem] = useState(null);
     const [searching, setSearching] = useState(false);
     const [dataBeforeSearch, setDataBeforeSearch] = useState<any[]>([]);
@@ -62,24 +62,26 @@ const Orders: React.FC<orderComponent> = ({listOrders}) => {
             // refresh the data
             const newArray = data.filter((obj: any) => obj.id !== id);
             setData(newArray)
-            toast.success("delete success")
+            toast.success("Xóa thành công")
+            handleClosePopUp();
         } catch (err: any) {
             toast.error(err.message)
         }
     }
 
     const handleClosePopUp = () => {
-        setOpenEdit(false);
+        setPopupStatus("");
     }
 
-    const handleOpenEdit = (item: any) => {
-        setOpenEdit(true);
+    const handleOpenPopUp = (type: string, item: any) => {
+        setPopupStatus(type)
         setSelectedItem(item);
     }
 
-    const handleSearch = async (start: any, end: any) => {
+    const handleSearch = async (start: any, end: any, customer: string) => {
         if(start && end){
-            const searchedOrder = await searchOrder(start, end);
+            console.log("cus? ", customer)
+            const searchedOrder = await searchOrder(start, end, customer);
             if(!searching){
                 setDataBeforeSearch(data);
             }
@@ -124,12 +126,12 @@ const Orders: React.FC<orderComponent> = ({listOrders}) => {
                                             <td className="py-2 px-4 border-b">{item.id}</td>
                                             <td className="py-2 px-4 border-b">{item.customer}</td>
                                             <td className="py-2 px-4 border-b">{format(item.date, 'dd/MM/yyyy')}</td>
-                                            <td className="py-2 px-4 border-b">{calculateTotalPrice(item.orders)}</td>
+                                            <td className="py-2 px-4 border-b">{formatToVND(calculateTotalPrice(item.orders))}</td>
                                             <td className="py-2 px-4 border-b">{item.status || 'Chờ'}</td>
                                             <td className="py-2 px-4 border-b">
                                                 <Button
                                                     className={buttonStyle + viewStyle}
-                                                    onClick={() => handleOpenEdit(item)}
+                                                    onClick={() => handleOpenPopUp('update', item)}
                                                 >
                                                     Xem
                                                 </Button>
@@ -137,7 +139,7 @@ const Orders: React.FC<orderComponent> = ({listOrders}) => {
                                             <td className="py-2 px-4 border-b">
                                                 <Button
                                                     className={buttonStyle + deleteStyle}
-                                                    onClick={() => handleDelete(item.id)}
+                                                    onClick={() => handleOpenPopUp('delete', item)}
                                                 >
                                                     Xóa
                                                 </Button>
@@ -162,9 +164,12 @@ const Orders: React.FC<orderComponent> = ({listOrders}) => {
                 </div>
             </div>
             {
-                selectedItem && openEdit && <Popup
+                selectedItem && (popupStatus === 'update' || popupStatus === 'delete') && <Popup
                     isOpen={true}
                     onClose={handleClosePopUp}
+                    type={popupStatus}
+                    item={selectedItem}
+                    onDelete={handleDelete}
                 >
                     <CreateOrder
                         item={selectedItem}

@@ -22,10 +22,15 @@
 
 .item {
     text-decoration: none;
+    text-align: center;
     cursor: pointer;
     border: none;
     background: transparent;
     font-size: 18px;
     line-height: 30px;
     margin: 0px 10px;
+}
+
+.item:hover {
+    background-color: rgb(226 232 240);
 }

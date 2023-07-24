@@ -10,6 +10,7 @@ export async function getData(collectionName: string){
     return convertDateOrder(data);
 }
 
+
 export async function getCustomersFirstPage() {
     const first = query(collection(database, "customers"), orderBy("name"), limit(3));
     const documentSnapshots = await getDocs(first);
@@ -84,12 +85,13 @@ export async function searchProduct(name: string) {
     return convertDateOrder(matchData);
 }
 
-export async function searchOrder(start: any, end: any) {
+export async function searchOrder(start: any, end: any, customer: string) {
     const orderRef = collection(database, "orders");
     const queryOrder = query(
         orderRef,
         where('date', '>=', start),
-        where('date', '<=', end)
+        where('date', '<=', end),
+        where('customer', '==', customer)
     );
     const documentSnapshots = await getDocs(queryOrder);
     const data = documentSnapshots.docs

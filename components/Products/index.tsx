@@ -1,6 +1,6 @@
 'use client'
 import {database} from '@/data/firebase';
-import {deleteDoc, doc, setDoc} from '@firebase/firestore';
+import {deleteDoc, doc} from '@firebase/firestore';
 import React, {useState} from 'react';
 import Link from "next/link";
 import Button from "@/utils/components/Button";
@@ -10,7 +10,7 @@ import Popup from "@/utils/components/Popup";
 import usePagination from "@/utils/custome-hooks/usePagination";
 import Pagination from "@/utils/components/Pagination";
 import SearchBar from "@/utils/components/SearchBar";
-import {convertDateOrder} from "@/utils/helper/orderHelper";
+import CreateProduct from "@/components/CreateProduct";
 
 interface productComponent {
     items: any
@@ -33,11 +33,10 @@ const Products:React.FC<productComponent> = ({ items }) => {
     const deleteStyle = " bg-red-500 hover:bg-red-400"
     const createStyle = " bg-green-500 hover:bg-green-400"
 
-    const refreshData = async (id: string, item: any) => {
+    const refreshProduct = async (item: any) => {
         try {
-            console.log("item ", item)
             let itemUpdate = data.map((it: any) => {
-                if(it.id === id){
+                if(it.id === item.id){
                     return  {
                         ...it,
                         ...item
@@ -47,25 +46,11 @@ const Products:React.FC<productComponent> = ({ items }) => {
                     return it
                 }
             });
-            setData(convertDateOrder(itemUpdate));
+            setData(itemUpdate);
         } catch (err: any) {
             toast.error(err.message)
         }
     }
-
-    const handleUpdate = async (id: string, data: any) => {
-        try{
-            // add document
-            const productRef: any = doc(database, "products", id);
-            await setDoc(productRef, data);
-            // refresh the data
-            await refreshData(id, data);
-            toast.success("Cập nhật thành công");
-            handleClosePopUp();
-        }catch (err: any){
-            toast.error(err.message);
-        }
-    };
 
     const handleDelete = async (id: string) => {
         try {
@@ -94,7 +79,9 @@ const Products:React.FC<productComponent> = ({ items }) => {
     const handleSearch = async (searchTerm: string) => {
         if(searchTerm){
             const searchedProduct = await searchProduct(searchTerm);
-            setDataBeforeSearch(data);
+            if(!searching){
+                setDataBeforeSearch(data);
+            }
             setData(searchedProduct);
             setSearching(true);
         }
@@ -169,14 +156,19 @@ const Products:React.FC<productComponent> = ({ items }) => {
             </div>
 
             {
-                selectedItem && (popupStatus === 'update' || popupStatus === 'delete') &&  <Popup
+                selectedItem && (popupStatus === 'update' || popupStatus === 'delete') && <Popup
                     isOpen={true}
                     onClose={handleClosePopUp}
                     type={popupStatus}
-                    item={selectedItem}
                     onDelete={handleDelete}
-                    onUpdate={handleUpdate}
-                />
+                    item={selectedItem}
+                >
+                    <CreateProduct
+                        item={selectedItem}
+                        handleClosePopup={handleClosePopUp}
+                        refreshData={refreshProduct}
+                    />
+                </Popup>
             }
 
         </>

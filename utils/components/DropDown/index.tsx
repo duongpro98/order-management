@@ -11,7 +11,8 @@ interface dropdownProps {
     isHavingOtherOption?: boolean,
     handleSelectOption?: any;
     handleChangeOther?: any;
-    disabled?: boolean
+    disabled?: boolean;
+    placeHolder?: string;
 }
 
 const DropDown: React.FC<dropdownProps> = (
@@ -25,6 +26,7 @@ const DropDown: React.FC<dropdownProps> = (
         isHavingOtherOption = false,
         handleChange,
         handleChangeOther,
+        placeHolder,
         disabled
     }) => {
     const [selected, setSelected] = useState(value || "");
@@ -85,11 +87,11 @@ const DropDown: React.FC<dropdownProps> = (
                 onBlur={() => handleClose()}
                 className={`select ${active ? 'active' : ''}`}
                 value={selected}
-                placeholder={"Select"}
+                placeholder={placeHolder || "Select"}
                 disabled={disabled}
                 onChange={(e) => handleChangeValue(e.target.value)}
             />
-            <div className={`option-wrapper mt-3 ${!open ? 'not-active' : ''}`}>
+            <div className={`option-wrapper mt-3 ${!open ? 'not-active' : ''}`} style={{ border: selectData.length === 0? 'none': ''}}>
                 {
                     selectData.map((item: any, idx: number) => (
                         <div className={`option`} key={idx} onClick={() => {

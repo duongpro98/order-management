@@ -277,7 +277,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                                 type="submit"
                             >
-                                {(loading && "create") && <Loading/>}
+                                {(loading === "create") && <Loading/>}
                                 Submit
                             </button>
                         )

@@ -6,7 +6,7 @@ import styles from "./Header.module.css";
 import {useSession, signOut, signIn} from "next-auth/react";
 import {usePathname} from "next/navigation";
 
-const IDLE_TIME = 30; // 10 minutes
+const IDLE_TIME = 30; // 30 minutes
 const DOCUMENT_EVENTS = ['click', 'scroll', 'mouseover', 'mousedown', 'keydown', 'touchstart'];
 
 const Header: React.FC = () => {
@@ -15,6 +15,7 @@ const Header: React.FC = () => {
     const [idleTime, setIdleTime] = useState(0);
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isAvatarOpen, setIsAvatarOpen] = useState(false);
     const menuRef = useRef<any>(null);
 
     const toggleMenu = () => {
@@ -67,7 +68,6 @@ const Header: React.FC = () => {
         } else {
             document.removeEventListener('click', handleBlur);
         }
-
         return () => {
             document.removeEventListener('click', handleBlur);
         };
@@ -105,6 +105,49 @@ const Header: React.FC = () => {
         setIdleTime(prev => prev + 1);
     }
 
+    const renderLinks = () => {
+        return (
+            <>
+                <Link href="/" className={styles.item} onClick={() => toggleMenu()}>
+                    Home
+                </Link>
+                <Link href="/order" className={styles.item} onClick={() => toggleMenu()}>
+                    Order
+                </Link>
+                <Link href="/inventory" className={styles.item} onClick={() => toggleMenu()}>
+                    Kho
+                </Link>
+            </>
+        )
+    }
+
+
+    const renderAvatar = () => {
+        return (
+            <>
+                {
+                    session?.user ? (
+                        <>
+                            <div className="relative">
+                                <img className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"
+                                     src="/duong.jpg" alt="Bordered avatar" onClick={() => setIsAvatarOpen(!isAvatarOpen)}/>
+                                {
+                                    isAvatarOpen && (
+                                        <div className="absolute right-0 top-8 mt-2 py-2 w-48 bg-white border rounded-lg shadow-lg z-101 flex flex-col">
+                                            <button className={styles.item} onClick={() => signOut()}>Sign Out</button>
+                                        </div>
+                                    )
+                                }
+                            </div>
+                        </>
+                    ): (
+                        <button className={styles.item} onClick={() => signIn()}>Sign In</button>
+                    )
+                }
+            </>
+        )
+    }
+
 
     return (
         <div className="flex items-center justify-between px-6 py-5 font-quick-san border-b shadow-md">
@@ -133,50 +176,22 @@ const Header: React.FC = () => {
                     <span className="uppercase text-left text-[20px] font-quick-san">CHICKEN DREAM</span>
                 </div>
                 <div>
-                    <button className={styles.item} onClick={() => signOut()}>Sign Out</button>
+                    {renderAvatar()}
                 </div>
                 {isMenuOpen && (
                     <div
                         ref={menuRef}
                         className="absolute left-6 top-0 mt-2 py-2 w-48 bg-white border rounded-lg shadow-lg z-101 flex flex-col"
                     >
-                        {/* Add your mobile menu content (links) here */}
-                        <Link href="/" className={styles.item} onClick={() => toggleMenu()}>
-                            Home
-                        </Link>
-                        <Link href="/order" className={styles.item} onClick={() => toggleMenu()}>
-                            Order
-                        </Link>
-                        <Link href="/inventory" className={styles.item} onClick={() => toggleMenu()}>
-                            Kho
-                        </Link>
-                        {/* Add more menu items (links) as needed */}
+                        {renderLinks()}
                     </div>
                 )}
             </div>
             <div className="hidden md:flex items-center justify-between px-6 py-5 font-quick-san w-full">
                 <div className={styles.title}>CHICKEN DREAM</div>
                 <div className={styles.itemContainer}>
-                    <Link href="/" className={styles.item}>
-                        Home
-                    </Link>
-                    <Link href="/order" className={styles.item}>
-                        Order
-                    </Link>
-                    <Link href="/inventory" className={styles.item}>
-                        Kho
-                    </Link>
-                    {
-                        session?.user ? (
-                            <div className="relative">
-                                {/*<img className="w-10 h-10 p-1 rounded-full ring-2 ring-gray-300 dark:ring-gray-500"*/}
-                                {/*     src="/duong.jpg" alt="Bordered avatar"/>*/}
-                                <button className={styles.item} onClick={() => signOut()}>Sign Out</button>
-                            </div>
-                        ): (
-                            <button className={styles.item} onClick={() => signIn()}>Sign In</button>
-                        )
-                    }
+                    {renderLinks()}
+                    {renderAvatar()}
                 </div>
             </div>
         </div>
