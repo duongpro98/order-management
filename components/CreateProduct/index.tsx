@@ -42,7 +42,7 @@ const CreateProduct:React.FC<productComponent> = ({ item, handleClosePopup, refr
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        setLoading(true);
+        setLoading("create");
         try{
             const data = {
                 name,
