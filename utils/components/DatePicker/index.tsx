@@ -20,7 +20,9 @@ const MyDatePicker: React.FC<datePickerObj> = ({ value, handleChangeValue, disab
     };
 
     return (
-        <div className={`flex items-center relative z-${zIndex || 50}`}>
+        <div className={`flex items-center relative`} style={{
+            zIndex: zIndex? zIndex: 50
+        }}>
             <DatePicker
                 selected={selectedDate}
                 onChange={handleDateChange}

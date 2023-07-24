@@ -200,7 +200,7 @@ const CreateOrder:React.FC<orderComponent> = ({ item, handleClosePopup, refreshD
 
     return (
         <>
-            <form className="max-w-xs mx-auto sm:max-w-sm md:max-w-xl" onSubmit={handleSubmit}>
+            <form className="mt-5 max-w-xs mx-auto sm:max-w-sm md:max-w-xl" onSubmit={handleSubmit}>
                 {/*Customer*/}
                 <div className="mb-4">
                     <div className={'font-bold mb-1'}>Customer: </div>

@@ -141,13 +141,13 @@ const Header: React.FC = () => {
                         className="absolute left-6 top-0 mt-2 py-2 w-48 bg-white border rounded-lg shadow-lg z-101 flex flex-col"
                     >
                         {/* Add your mobile menu content (links) here */}
-                        <Link href="/" className={styles.item}>
+                        <Link href="/" className={styles.item} onClick={() => toggleMenu()}>
                             Home
                         </Link>
-                        <Link href="/order" className={styles.item}>
+                        <Link href="/order" className={styles.item} onClick={() => toggleMenu()}>
                             Order
                         </Link>
-                        <Link href="/inventory" className={styles.item}>
+                        <Link href="/inventory" className={styles.item} onClick={() => toggleMenu()}>
                             Kho
                         </Link>
                         {/* Add more menu items (links) as needed */}
